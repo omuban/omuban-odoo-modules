@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List View untuk HR Departments -->
+        <record id="view_department_list_smartatt" model="ir.ui.view">
+            <field name="name">hr.department.list.smartatt</field>
+            <field name="model">hr.department</field>
+            <field name="arch" type="xml">
+                <list string="Departments">
+                    <field name="name"/>
+                    <field name="manager_id"/>
+                    <field name="company_id"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Action untuk HR Departments -->
+        <record id="action_smart_attendance_departments" model="ir.actions.act_window">
+            <field name="name">Departments</field>
+            <field name="res_model">hr.department</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('view_department_list_smartatt')})]"/>
+        </record>
+    </data>
+</odoo>

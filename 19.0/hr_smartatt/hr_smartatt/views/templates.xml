@@ -1,0 +1,43 @@
+<odoo>
+    <data>
+        <template id="hr_smartatt.home" name="Smart Attendance Home">
+            <html>
+                <head>
+                    <title>Smart Attendance</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                    <link rel="manifest" href="/hr_smartatt/static/src/manifest.json"/>
+                    <meta name="theme-color" content="#105F82"/>
+                    <meta name="mobile-web-app-capable" content="yes"/>
+                    <meta name="apple-mobile-web-app-capable" content="yes"/>
+                    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+                    <link rel="apple-touch-icon" href="/hr_smartatt/static/src/img/logo.png"/>
+                    <meta property="og:title" content="Smart Attendance – CleanPresence"/>
+                    <meta property="og:description" content="An online attendance application that is practical and easy for your company. Register and check in with just one click!"/>
+                    <meta property="og:type" content="website"/>
+                    <meta property="og:url" content="https://cleanpresence.com/smartatt"/>
+                    <meta property="og:image" content="https://cleanpresence.com/hr_smartatt/static/src/img/logo.png"/>
+                    <meta property="og:site_name" content="CleanPresence"/>
+                    <meta name="twitter:card" content="summary_large_image"/>
+                    <meta name="twitter:title" content="Smart Attendance – CleanPresence"/>
+                    <meta name="twitter:description" content="An online attendance application that is practical and easy for your company. Register and check in with just one click!"/>
+                    <meta name="twitter:image" content="https://cleanpresence.com/hr_smartatt/static/src/img/logo.png"/>
+                    <t t-call-assets="web.assets_frontend"/>
+                </head>
+                <body>
+                   <t t-call="web.layout">
+                        <div id="smartatt_app_root" 
+                             t-att-data-is-logged-in="str(is_logged_in)"
+                             t-att-data-user-name="user_name"
+                             t-att-data-employee-id="employee_id"
+                             t-att-data-employee-department="employee_department"
+                             t-att-data-employee-job-title="employee_job_title"
+                             t-att-data-employee-avatar-url="employee_avatar_url"
+                             >
+                        </div>
+                </t>
+                   
+                </body>
+            </html>
+        </template>
+    </data>
+</odoo>

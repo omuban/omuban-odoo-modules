@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- PERBAIKAN: Ganti nama template agar konsisten -->
+    <t t-name="hr_smartatt.LocationPickerField">
+        <div class="o_location_picker_widget" style="width: 100%;">
+            <div t-ref="mapContainer" 
+                 style="height: 400px; width: 100%; background-color: #f5f5f5; border: 1px solid #ccc;">
+                <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                    <span>Initializing Map...</span>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

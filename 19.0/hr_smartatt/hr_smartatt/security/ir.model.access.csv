@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_attendance_officer,hr.attendance smart att officer,hr_attendance.model_hr_attendance,group_smart_attendance_officer,1,1,1,1
+access_hr_employee_officer,hr.employee smart att officer,hr.model_hr_employee,group_smart_attendance_officer,1,1,1,1
+access_hr_department_officer,hr.department smart att officer,hr.model_hr_department,group_smart_attendance_officer,1,0,0,0
+access_hr_job_officer,hr.job smart att officer,hr.model_hr_job,group_smart_attendance_officer,1,0,0,0
+access_hr_work_location_officer,hr.work.location smart att officer,hr.model_hr_work_location,group_smart_attendance_officer,1,0,0,0
+access_resource_calendar_officer,resource.calendar smart att officer,resource.model_resource_calendar,group_smart_attendance_officer,1,0,0,0
+access_hr_department_admin,hr.department smart att admin,hr.model_hr_department,group_smart_attendance_administrator,1,1,1,1
+access_hr_job_admin,hr.job smart att admin,hr.model_hr_job,group_smart_attendance_administrator,1,1,1,1
+access_hr_work_location_admin,hr.work.location smart att admin,hr.model_hr_work_location,group_smart_attendance_administrator,1,1,1,1
+access_resource_calendar_admin,resource.calendar smart att admin,resource.model_resource_calendar,group_smart_attendance_administrator,1,1,1,1

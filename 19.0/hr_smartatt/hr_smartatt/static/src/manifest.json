@@ -1,0 +1,21 @@
+{
+  "short_name": "Attendance",
+  "name": "Smart Attendance",
+  "icons": [
+    {
+      "src": "/hr_smartatt/static/src/img/logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/hr_smartatt/static/src/img/logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/smartatt",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#14858e",
+  "orientation": "portrait-primary"
+}
