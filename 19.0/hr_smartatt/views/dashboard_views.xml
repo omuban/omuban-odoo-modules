@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Definisi Client Action untuk Dashboard -->
+        <record id="action_smart_attendance_dashboard_client" model="ir.actions.client">
+            <field name="name">Dashboard</field>
+            <!-- Tag ini harus SAMA dengan yang ada di registry JS -->
+            <field name="tag">hr_smartatt_admin_dashboard</field>
+            <!-- Opsional: Target main agar full screen di area konten -->
+            <field name="target">main</field>
+        </record>
+    </data>
+</odoo>

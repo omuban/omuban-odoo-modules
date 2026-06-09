@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="hr_smartatt.LocationPicker">
+        <div class="o_location_picker_widget">
+            <div t-ref="mapContainer" style="height: 400px; width: 100%; background: #eee;">
+                Loading Map...
+            </div>
+            
+            <div class="mt-2 text-muted">
+                <span>Value: </span>
+                <span t-esc="props.record.data[props.name] or 'Belum ada lokasi'"/>
+            </div>
+        </div>
+    </t>
+</templates>

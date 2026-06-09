@@ -1,0 +1,10 @@
+/**
+ * Aturan ini menargetkan elemen dengan kelas kustom kita di dalam sebuah form sheet.
+ * 'grid-column: 1 / -1;' adalah perintah CSS Grid yang berarti:
+ * "Mulai dari garis grid pertama dan rentangkan hingga garis grid terakhir".
+ * Ini akan memaksa elemen untuk mengambil lebar penuh.
+ */
+.o_form_sheet .o_field_map_full_width {
+    grid-column: 1 / -1 !important;
+    display: grid;
+}
