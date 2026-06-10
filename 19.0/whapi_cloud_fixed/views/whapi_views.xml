@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- <record id="view_whapi_message_search" model="ir.ui.view">
+		<field name="name">whapi.message.search</field>
+		<field name="model">whapi.message</field>
+		<field name="arch" type="xml">
+			<search string="WhatsApp Messages">
+				<field name="received_at"/>
+				<field name="from_name"/>
+				<field name="sender"/>
+				<field name="chat_name"/>
+				<field name="wa_category"/>
+				<field name="tag_ids"/>
+				<field name="formatted_text"/>
+
+				<filter string="Chat/Group" name="chat_name" domain="[('direction','=','incoming')]"/>
+				<filter string="Category" name="wa_category" domain="[('direction','=','outgoing')]"/>
+				<filter string="Hashtags" name="tag_ids" domain="[('status','=','failed')]"/>
+				<filter string="Unread" name="unread" domain="[('is_read','=',False)]"/>
+
+				<group expand="0" string="Group By">
+					<filter string="Category" name="wa_category" context="{'group_by':'wa_category'}"/>
+					<filter string="Chat/Group" name="from_name" context="{'group_by':'from_name'}"/>
+					<field string="Date WA" name="received_at" context="{'group_by':'received_at'}"/>/>
+				</group>
+			</search>
+		</field>
+	</record>     -->
+
+    <!-- Action -->
+    <record id="action_whapi_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="res_model">whapi.message</field>
+        <field name="view_mode">graph</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Halaman Dashboard.
+            </p>
+        </field>
+    </record>
+	
+    <record id="action_whapi_messages" model="ir.actions.act_window">
+        <field name="name">Inbox</field>
+        <field name="res_model">whapi.message</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Daftar pesan WhatsApp — klik baris untuk melihat detail.
+            </p>
+        </field>
+    </record>
+	
+	<record id="action_whapi_tags" model="ir.actions.act_window">
+        <field name="name">Hashtags</field>
+        <field name="res_model">whapi.tag</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Daftar pesan WHAPI — klik baris untuk melihat detail.
+            </p>
+        </field>
+    </record>
+
+	<record id="view_whapi_message_pie" model="ir.ui.view">
+		<field name="name">whapi.message.graph</field>
+		<field name="model">whapi.message</field>
+		<field name="arch" type="xml">
+			<graph string="Distribusi Laporan WA" type="pie">
+				<field name="wa_category"/>
+				<field name="received_at"/>
+			</graph>
+		</field>
+	</record>
+	
+	<!-- List view (compact list) -->
+    <record id="view_whapi_message_list" model="ir.ui.view">
+        <field name="name">whapi.message.list</field>
+        <field name="model">whapi.message</field>
+        <field name="arch" type="xml">
+            <list string="WHAPI Messages" create="false" edit="false" delete="false" class="whapi_list_compact">
+                <field name="received_at" string="Received" widget="datetime"/>
+                <field name="from_name" string="From"/>
+                <field name="chat_name" string="Chat/Group"/>
+                <field name="wa_category" string="Category"/>
+				<field name="tag_ids" widget="many2many_tags" />
+				<field name="text" string="Message" widget="char"/>
+                <!-- <button name="action_create_task" type="object" string="Create Task" class="oe_inline" context="{}"/> -->
+            </list>
+        </field>
+    </record>
+	
+    <record id="view_whapi_tag_list" model="ir.ui.view">
+        <field name="name">whapi.tag.list</field>
+        <field name="model">whapi.tag</field>
+        <field name="arch" type="xml">
+            <list string="Hashtags" create="false" edit="false" delete="false" class="whapi_list_compact">
+                <field name="name" string="Nama Tag"/>
+                <field name="color" string="Warna"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form view (polished) -->
+    <record id="view_whapi_message_form" model="ir.ui.view">
+        <field name="name">whapi.message.form</field>
+        <field name="model">whapi.message</field>
+        <field name="arch" type="xml">
+            <form string="WHAPI Message">
+                <!-- Header: primary info + quick actions -->
+                <header>                    
+                    <field name="chat_name" readonly="1"/>
+                </header>
+
+                <sheet>
+                    <group colspan="2" class="o_row">
+                        <group>
+							<field name="from_name" readonly="1"/>
+                            <field name="sender" readonly="1"/>
+                            <field name="chat_name" readonly="1"/>
+                        </group>
+                        <group>
+							<field name="received_at" widget="datetime"/>
+                            <field name="wa_category"/>
+							<field name="tag_ids" widget="many2many_tags" options="{'no_create': False}" />
+                        </group>
+                    </group>
+					
+					<notebook>
+						<page string="WA Chat">
+							<group>
+								<field name="formatted_text" widget="html" readonly="1" options="{'toolbar': false, 'editable': false}" nolabel="1"/>
+							</group>
+						</page>
+                        <page string="Raw Message">
+                            <group>
+                                <field name="payload" nolabel="1" widget="monospace" readonly="1"/>
+                            </group>
+                        </page>						
+						<page string="Attributes">
+                            <group>								
+								<field name="name" readonly="1"/>
+                                <field name="message_type"/>
+								<field name="chat_id" readonly="1"/>
+								<field name="recipient" readonly="1"/>
+								<field name="from_me" readonly="1"/>
+                                <field name="quoted_id" readonly="1"/>
+                                <field name="quoted_author" readonly="1"/>
+                                <field name="quoted_text" widget="text" readonly="1"/>
+                                <field name="channel_id"/>
+                            </group>
+                        </page>
+					</notebook>
+					
+					<!-- <notebook>
+						<page string="Raw Message">
+                            <group>
+                                <field name="payload" nolabel="1" widget="monospace" readonly="1"/>
+                            </group>
+                        </page>
+					</notebook> -->
+                    
+                </sheet>
+            </form>
+        </field>
+    </record>
+	
+
+	<record id="view_whapi_tag_form" model="ir.ui.view">
+        <field name="name">whapi.tag.form</field>
+        <field name="model">whapi.tag</field>
+        <field name="arch" type="xml">
+            <form string="WHAPI Message">
+                
+                <sheet>
+                    <group colspan="2" class="o_row">
+                        <group>
+							<field name="name"/>
+                        </group>
+                        <group>
+                            <field name="color"/>
+                        </group>
+                    </group>
+					
+					
+                </sheet>
+            </form>
+        </field>
+    </record>
+	
+	<!-- Top-level menu -->
+    <menuitem id="menu_whapi_root" name="WhatsApp" sequence="1"/>
+	<menuitem id="menu_whapi_dashboard" name="Dashboard" parent="menu_whapi_root" action="action_whapi_dashboard" sequence="1"/>
+    <menuitem id="menu_whapi_messages" name="Inbox" parent="menu_whapi_root" action="action_whapi_messages" sequence="2"/>
+    <menuitem id="menu_whapi_settings" name="Settings" parent="menu_whapi_root" sequence="3"/>
+
+	<!-- Top-level menu -->
+    <menuitem id="menu_whapi_tags" name="Hashtags" parent="menu_whapi_settings" action="action_whapi_tags" sequence="1"/>
+</odoo>

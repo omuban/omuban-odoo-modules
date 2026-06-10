@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_whapi_message" model="ir.sequence">
+        <field name="name">WHAPI Message</field>
+        <field name="code">whapi.message</field>
+        <field name="prefix">WHAPI/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="implementation">no_gap</field>
+    </record>
+</odoo>

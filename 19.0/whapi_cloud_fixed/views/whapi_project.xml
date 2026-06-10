@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_whapi_message_form_inherit_project" model="ir.ui.view">
+    <field name="name">whapi.message.form.inherit.project</field>
+    <field name="model">whapi.message</field>
+    <!-- ganti prefix modul kalau view asli ada di modul lain, mis. ref="whapi.view_whapi_message_form" -->
+    <field name="inherit_id" ref="view_whapi_message_form"/>
+    <field name="arch" type="xml">
+      <!-- sisipkan page di dalam notebook yang sudah ada -->
+      <xpath expr="//notebook" position="inside">
+
+        <!-- Project / Task page -->
+        <page string="Project / Links">
+          <group>
+            <field name="project_id" context="{'default_name': 'WhatsApp'}"/>
+            <separator string=""/>
+            <button name="action_create_task"
+                    string="Create Task"
+                    type="object"
+                    class="oe_highlight"
+                    icon="fa-tasks"/>
+          </group>
+        </page>
+
+        <!-- AI / Summary page -->
+        <page string="AI / Summary">
+          <group>
+            <button name="action_summarize_with_gemini"
+                    string="AI Process"
+                    type="object"
+                    class="oe_highlight"
+                    icon="fa-robot"/>
+            
+          </group>
+			<separator string="AI RESULT"/>
+            <field name="gemini_summary_result" widget="html" nolabel="1"/>
+        </page>
+
+      </xpath>
+    </field>
+  </record>
+</odoo>

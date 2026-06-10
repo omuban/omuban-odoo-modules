@@ -1,0 +1,54 @@
+/* target only our list view */
+.whapi_list_compact .o_list_table tbody tr {
+    /* ensure row height baseline */
+    height: 56px !important;           /* set desired row height (adjust) */
+    max-height: 56px !important;
+}
+
+/* force cells to not expand vertically */
+.whapi_list_compact .o_list_table tbody tr td {
+    vertical-align: middle !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    overflow: hidden !important;
+}
+
+/* limit inner field containers (text/html/char/etc.) */
+/* show up to 2 lines, then ellipsis */
+.whapi_list_compact .o_list_table tbody tr td .o_field_char,
+.whapi_list_compact .o_list_table tbody tr td .o_field_text,
+.whapi_list_compact .o_list_table tbody tr td .o_field_html,
+.whapi_list_compact .o_list_table tbody tr td .o_field_monetary,
+.whapi_list_compact .o_list_table tbody tr td .o_field_many2one {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    overflow: hidden !important;
+    max-height: 56px !important; /* must match row height */
+    line-height: 1.5em !important;
+    white-space: normal !important;
+    text-overflow: ellipsis !important;
+}
+
+/* if widget renders inner divs/spans, apply clamp to them too */
+.whapi_list_compact .o_list_table tbody tr td .o_inner_field,
+.whapi_list_compact .o_list_table tbody tr td div.o_field_char,
+.whapi_list_compact .o_list_table tbody tr td span.o_field_char {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    overflow: hidden !important;
+    max-height: 56px !important;
+}
+
+/* Defensive: if any field uses <br> or block children, hide overflow */
+.whapi_list_compact .o_list_table tbody tr td .o_field_html * {
+    max-height: 56px !important;
+    overflow: hidden !important;
+}
+
+/* make icons / badges aligned center */
+.whapi_list_compact .o_list_table tbody tr td .badge,
+.whapi_list_compact .o_list_table tbody tr td .o_tag {
+    line-height: 1.1em !important;
+}

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Actions -->
+    <record id="action_whapi_daily_counts" model="ir.actions.act_window">
+        <field name="name">WHAPI Daily Counts</field>
+        <field name="res_model">whapi.daily.counts</field>
+        <field name="view_mode">list,graph,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Jumlah pesan per hari (materialized view).</p>
+        </field>
+    </record>
+
+    <record id="action_whapi_channel_counts" model="ir.actions.act_window">
+        <field name="name">WHAPI Channel Counts</field>
+        <field name="res_model">whapi.channel.counts</field>
+        <field name="view_mode">list,graph,pivot</field>
+    </record>
+
+    <record id="action_whapi_category_counts" model="ir.actions.act_window">
+        <field name="name">WHAPI Category Counts</field>
+        <field name="res_model">whapi.category.counts</field>
+        <field name="view_mode">list,graph,pivot</field>
+    </record>
+
+    <record id="action_whapi_tag_counts" model="ir.actions.act_window">
+        <field name="name">WHAPI Tag Counts</field>
+        <field name="res_model">whapi.tag.counts</field>
+        <field name="view_mode">list,graph,pivot</field>
+    </record>
+
+    <!-- Menus -->
+    <menuitem id="menu_whapi_reports" name="WHAPI Reports" parent="menu_whapi_root" sequence="10"/>
+    <menuitem id="menu_whapi_reports_daily" name="Daily Counts" parent="menu_whapi_reports" action="action_whapi_daily_counts" sequence="1"/>
+    <menuitem id="menu_whapi_reports_channel" name="Channel Counts" parent="menu_whapi_reports" action="action_whapi_channel_counts" sequence="2"/>
+    <menuitem id="menu_whapi_reports_category" name="Category Counts" parent="menu_whapi_reports" action="action_whapi_category_counts" sequence="3"/>
+    <menuitem id="menu_whapi_reports_tags" name="Tag Counts" parent="menu_whapi_reports" action="action_whapi_tag_counts" sequence="4"/>
+
+    <!-- Tree views -->
+    <record id="view_whapi_daily_counts_tree" model="ir.ui.view">
+        <field name="name">whapi.daily.counts.tree</field>
+        <field name="model">whapi.daily.counts</field>
+        <field name="arch" type="xml">
+            <list string="Daily Counts" create="false" edit="false" delete="false">
+                <field name="day"/>
+                <field name="message_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_whapi_channel_counts_tree" model="ir.ui.view">
+        <field name="name">whapi.channel.counts.tree</field>
+        <field name="model">whapi.channel.counts</field>
+        <field name="arch" type="xml">
+            <list string="Channel Counts" create="false" edit="false" delete="false">
+                <field name="channel_name"/>
+                <!-- <field name="day"/> -->
+                <field name="message_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_whapi_category_counts_tree" model="ir.ui.view">
+        <field name="name">whapi.category.counts.tree</field>
+        <field name="model">whapi.category.counts</field>
+        <field name="arch" type="xml">
+            <list string="Category Counts" create="false" edit="false" delete="false">
+                <field name="wa_category"/>
+                <field name="message_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_whapi_tag_counts_tree" model="ir.ui.view">
+        <field name="name">whapi.tag.counts.tree</field>
+        <field name="model">whapi.tag.counts</field>
+        <field name="arch" type="xml">
+            <list string="Tag Counts" create="false" edit="false" delete="false">
+                <field name="tag_name"/>
+                <field name="message_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Graph / Pivot views (examples) -->
+    <record id="view_whapi_daily_counts_graph" model="ir.ui.view">
+        <field name="name">whapi.daily.counts.graph</field>
+        <field name="model">whapi.daily.counts</field>
+        <field name="arch" type="xml">
+            <graph string="Messages per Day" type="bar">
+                <field name="day" type="row"/>
+                <field name="message_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_whapi_tag_counts_pivot" model="ir.ui.view">
+        <field name="name">whapi.tag.counts.pivot</field>
+        <field name="model">whapi.tag.counts</field>
+        <field name="arch" type="xml">
+            <pivot string="Tag Frequency">
+                <field name="tag_name" type="row"/>
+                <field name="message_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+</odoo>

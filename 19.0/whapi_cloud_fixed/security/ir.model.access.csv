@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_whapi_message,access_whapi_message,model_whapi_message,,1,1,1,1
+access_whapi_tag,access_whapi_tag,model_whapi_tag,,1,1,1,1
