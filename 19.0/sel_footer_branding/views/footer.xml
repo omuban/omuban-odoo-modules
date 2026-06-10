@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="selstudio_footer_branding"
+              inherit_id="website.layout"
+              name="Custom Footer Branding">
+
+        <xpath expr="//footer//div[contains(@class, 'o_footer_copyright')]"
+               position="replace">
+
+            <t t-if="request.env['ir.config_parameter'].sudo().get_param('selstudio.footer_branding_enabled')">
+                <div class="o_footer_copyright text-center">
+                    <span t-esc="request.env['ir.config_parameter'].sudo().get_param('selstudio.footer_branding_text')"/>
+                </div>
+            </t>
+
+        </xpath>
+
+    </template>
+
+</odoo>

@@ -1,0 +1,33 @@
+<odoo>
+    <record id="res_config_settings_view_form_selstudio_footer" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.selstudio.footer</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@class='settings']" position="inside">
+                <div class="app_settings_block"
+                     data-string="Sel Studio Branding"
+                     string="Sel Studio Branding">
+
+                    <h2>Sel Studio Branding</h2>
+
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="footer_brand_text"/>
+                                <div class="text-muted">
+                                    Footer text shown on website pages
+                                </div>
+                                <field name="footer_brand_text"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
