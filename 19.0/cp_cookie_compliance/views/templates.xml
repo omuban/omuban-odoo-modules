@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="cookie_banner_template" inherit_id="website.layout">
+        <xpath expr="//footer" position="after">
+            <!-- Main Banner -->
+            <div id="cp_cookie_banner" class="cp-cookie-banner d-none">
+				<div class="container d-md-flex align-items-center justify-content-between py-3">
+					<div class="cp-text me-md-4">
+						<p class="mb-0">
+							<strong>CleanPresence</strong> uses cookies to ensure security and improve your experience. 
+						</p>
+					</div>
+					<div class="cp-buttons d-flex gap-2 mt-3 mt-md-0">
+						<button id="btn_reject_all" class="btn btn-outline-secondary btn-sm">Reject All</button>
+						<!-- PERBAIKAN: Gunakan data-bs untuk membuka modal tanpa JS -->
+						<button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#cookiePrefsModal">Preferences</button>
+						<button id="btn_accept_all" class="btn btn-primary btn-sm">Accept All</button>
+					</div>
+				</div>
+			</div>
+
+            <!-- Preferences Modal -->
+            <div class="modal fade" id="cookiePrefsModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content border-0">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cookie Preferences</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Strictly Necessary -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h6 class="mb-0">Strictly Necessary</h6>
+                                    <small class="text-muted">Required for secure login (CSRF) and payment processing (Paddle/Xendit).</small>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" checked="checked" disabled="disabled"/>
+                                </div>
+                            </div>
+                            <!-- Analytics -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h6 class="mb-0">Analytics</h6>
+                                    <small class="text-muted">Helps us understand how CleanPresence is used. No biometrics or PII collected.</small>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input pref-toggle" type="checkbox" id="pref_analytics"/>
+                                </div>
+                            </div>
+                            <!-- Marketing -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Marketing</h6>
+                                    <small class="text-muted">Used to deliver relevant platform updates and features.</small>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input pref-toggle" type="checkbox" id="pref_marketing"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button id="btn_save_prefs" class="btn btn-primary w-100" data-bs-dismiss="modal">Save My Choice</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+        <!-- Footer Re-open Link -->
+        <xpath expr="//footer//ul[contains(@class, 'js_smart_list') or contains(@class, 'list-unstyled')]" position="inside">
+            <li><a href="#" id="reopen_cookie_settings" class="text-muted small">Manage Cookie Settings</a></li>
+        </xpath>
+    </template>
+</odoo>

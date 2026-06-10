@@ -1,0 +1,25 @@
+.cp-cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+    z-index: 9999;
+    border-top: 1px solid #eee;
+    padding: 10px 0;
+}
+
+.cp-cookie-banner p {
+    font-size: 0.9rem;
+    color: #444;
+}
+
+#cookiePrefsModal .modal-title {
+    font-weight: 600;
+}
+
+#cookiePrefsModal .form-check-input:checked {
+    background-color: #00A09D; /* Odoo typical brand or customize to CleanPresence blue */
+    border-color: #00A09D;
+}
