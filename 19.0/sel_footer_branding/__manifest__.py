@@ -1,14 +1,13 @@
 {
-    "name": "Sel Studio Footer Branding",
+    "name": "White-Label Website: Remove or Customize "Powered by Odoo" Footer",
     "version": "19.0.1.0.0",
     "category": "Website",
-    "summary": "Replace Odoo footer branding with CV. Sel Studio",
+    "summary": "Perfect for Agencies. Cleanly remove or completely rewrite the "Powered by Odoo" branding text from the website footer view via secure QWeb inheritance.",
     "description": """
 Replace footer text:
-Powered by Odoo → Powered by CV. Sel Studio
+Powered by Odoo → Powered by your company
 """,
-    "author": "CV. Sel Studio",
-    "website": "https://selstudio.id",
+    "author": "Omuban",
     "depends": [
         "website",
     ],
@@ -17,5 +16,5 @@ Powered by Odoo → Powered by CV. Sel Studio
     ],
     "installable": True,
     "application": False,
-    "license": "LGPL-3",
+    "license": "OPL-1",
 }
