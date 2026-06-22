@@ -1,0 +1,44 @@
+<odoo>
+    <!-- Menu Counter di Portal Home -->
+    <template id="portal_my_home_easy_subs" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Subscription Portal</t>
+                <t t-set="url" t-value="'/my/subscriptions'"/>
+                <t t-set="placeholder_count" t-value="easy_sub_count"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Halaman List Subscription -->
+    <template id="portal_my_subs" name="My Subscriptions">
+        <t t-call="portal.portal_layout">
+            <h3>My Subscription</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Package</th>
+                            <th>Status</th>
+                            <th>Expired</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="subscriptions" t-as="sub">
+                            <td><span t-field="sub.product_id.name"/></td>
+                            <td>
+                                <span t-if="sub.state == 'active'" class="badge text-bg-success">Active</span>
+                                <span t-if="sub.state == 'expired'" class="badge text-bg-danger">Expired</span>
+                            </td>
+                            <td><span t-field="sub.end_date"/></td>
+                            <td>
+                                <a href="/pricing" class="btn btn-sm btn-outline-primary">Extend</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+</odoo>

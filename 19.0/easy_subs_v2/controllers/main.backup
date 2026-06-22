@@ -1,0 +1,84 @@
+# -*- coding: utf-8 -*-
+import json
+from odoo import http
+from odoo.http import request
+
+class CleanPresenceSaasV2(http.Controller):
+
+    @http.route('/pricing', type='http', auth='public', website=True)
+    def pricing_page(self, **kw):
+        website = request.website
+        
+        # 1. Logic Pencarian Pricelist yang Tahan Banting di Odoo 19
+        pl_id = request.session.get('website_sale_current_pl')
+        if pl_id:
+            current_pricelist = request.env['product.pricelist'].sudo().browse(pl_id)
+        else:
+            try:
+                current_pricelist = website.get_current_pricelist()
+            except Exception:
+                current_pricelist = website.pricelist_ids[:1] or request.env['product.pricelist'].search([], limit=1)
+
+        # 2. Ambil Global Seat/Setup Price dari Settings
+        get_param = request.env['ir.config_parameter'].sudo().get_param
+        seat_p_id = int(get_param('easy_subs_v2.seat_product_id', 0))
+        setup_p_id = int(get_param('easy_subs_v2.setup_product_id', 0))
+        
+        seat_product = request.env['product.template'].sudo().browse(seat_p_id)
+        setup_product = request.env['product.template'].sudo().browse(setup_p_id)
+
+        # 3. Load Produk & Bangun Grup
+        core_products = request.env['product.template'].sudo().search([
+            ('cp_type', '=', 'core'),
+            ('sale_ok', '=', True)
+        ])
+
+        plan_groups = {}
+        addon_data_map = {} 
+
+        for p in core_products:
+            # Grup Plan Berdasarkan Group Code (Essential/Growth/Trial)
+            g_code = (p.plan_group_code or 'DEFAULT').upper()
+            if g_code not in plan_groups:
+                plan_groups[g_code] = {'monthly': False, 'yearly': False, 'trial': False}
+            
+            plan_groups[g_code][p.billing_cycle] = p
+
+            # Buat data Addon Khusus per Core Plan (Addon Matrix)
+            addon_entries = {}
+            for addon_line in p.cp_available_addon_ids.filtered(lambda x: x.currency_id == current_pricelist.currency_id):
+                addon_entries[str(addon_line.addon_product_id.id)] = {
+                    'name': addon_line.addon_product_id.name,
+                    'price': addon_line.special_price,
+                    'desc': addon_line.addon_product_id.description_sale or ''
+                }
+            addon_data_map[str(p.id)] = addon_entries
+
+        # Bungkus data ke Frontend
+        vals = {
+            'plan_groups': plan_groups,
+            'current_pricelist': current_pricelist,
+            'pricelists': request.env['product.pricelist'].sudo().search([('selectable', '=', True)]),
+            'seat_price': seat_product.get_beauty_price_by_pricelist(current_pricelist.id) if seat_product.exists() else 1.5,
+            'setup_price': setup_product.get_beauty_price_by_pricelist(current_pricelist.id) if setup_product.exists() else 0,
+            'addon_map_json': json.dumps(addon_data_map),
+            'is_logged_in': True if request.session.uid else False,
+        }
+        return request.render('easy_subs_v2.pricing_page_v2', vals)
+
+    @http.route('/saas/check_subdomain', type='json', auth='public', website=True)
+    def check_subdomain(self, subdomain):
+        if not subdomain or len(subdomain) < 3:
+            return {'status': 'invalid', 'msg': 'Too short (min 3 chars)'}
+        
+        clean_name = "".join(filter(lambda x: x.isalnum() or x == "-", subdomain)).lower()
+        existing = request.env['saas.tenant'].sudo().search_count([('name', '=', clean_name)])
+        
+        if existing:
+            return {'status': 'taken', 'msg': 'Subdomain already taken'}
+        return {'status': 'available', 'msg': 'Available!', 'clean_name': clean_name}
+
+    @http.route('/workspace/setup', type='json', auth='user', methods=['POST'])
+    def setup_workspace(self, **post):
+        # ... logic creation sama dengan yang stabil terakhir ...
+        pass

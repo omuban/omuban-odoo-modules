@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List Tenant -->
+    <record id="view_saas_tenant_tree" model="ir.ui.view">
+        <field name="name">saas.tenant.list</field>
+        <field name="model">saas.tenant</field>
+        <field name="arch" type="xml">
+            <list string="SaaS Tenants">
+                <field name="name" string="Subdomain"/>
+                <field name="company_name"/>
+                <field name="owner_id"/>
+                <field name="plan_id"/>
+                <field name="max_seats" string="Seats"/>
+                <field name="state" widget="badge" decoration-info="state == 'provisioning'" decoration-success="state == 'active'" decoration-danger="state == 'expired'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form Tenant -->
+    <record id="view_saas_tenant_form" model="ir.ui.view">
+        <field name="name">saas.tenant.form</field>
+        <field name="model">saas.tenant</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" clickable="True"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="subdomain-name"/>.cleanpresence.com</h1>
+                    </div>
+                    <group>
+                        <group string="Subscription">
+                            <field name="owner_id"/>
+                            <field name="plan_id"/>
+                            <field name="max_seats"/>
+                            <field name="is_trial" readonly="1"/>
+                        </group>
+                        <group string="System">
+                            <field name="start_date"/>
+                            <field name="expiration_date"/>
+                            <field name="database_name"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ACTIONS -->
+    <record id="action_saas_tenant" model="ir.actions.act_window">
+        <field name="name">All Tenants</field>
+        <field name="res_model">saas.tenant</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_saas_products" model="ir.actions.act_window">
+        <field name="name">SaaS Plans</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <!-- PERBAIKAN: Gunakan cp_type bukan is_easy_sub -->
+        <field name="domain">[('cp_type', 'in', ['core', 'addon'])]</field>
+        <field name="context">{'default_cp_type': 'core'}</field>
+    </record>
+
+    <!-- MENU STRUCTURE -->
+    <menuitem id="menu_saas_root" name="SaaS Management" web_icon="easy_subs_v2,static/description/icon.png" sequence="5"/>
+    <menuitem id="menu_saas_tenants" name="Tenants" parent="menu_saas_root" action="action_saas_tenant" sequence="10"/>
+    <menuitem id="menu_saas_products" name="SaaS Products" parent="menu_saas_root" action="action_saas_products" sequence="20"/>
+</odoo>

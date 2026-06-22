@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="provisioning_loading_screen" name="Provisioning CleanPresence">
+        <t t-call="website.layout">
+            <div class="container-fluid bg-light vh-100 d-flex align-items-center justify-content-center">
+                <div class="text-center p-5 shadow-lg bg-white rounded-4" style="max-width: 600px; width: 100%;">
+                    
+                    <!-- ANIMATED LOGO / ICON -->
+                    <div class="mb-4">
+                        <div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <h2 class="fw-bold text-dark mb-2">Deploying Workspace...</h2>
+                    <p class="text-muted mb-4">Establishing secure database for <strong t-esc="tenant.company_name"/></p>
+
+                    <!-- PROGRESS BAR DINAMIS -->
+                    <div class="progress mb-4" style="height: 10px; border-radius: 10px;">
+                        <div id="provision-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                             role="progressbar" style="width: 10%; transition: width 2s ease;"></div>
+                    </div>
+
+                    <!-- STEP LABELS -->
+                    <ul class="list-unstyled text-start small mx-auto" style="max-width: 350px;">
+                        <li id="step-1" class="mb-2 text-primary fw-bold"><i class="fa fa-check-circle me-2"/> Allocating cloud resources...</li>
+                        <li id="step-2" class="mb-2 text-muted"><i class="fa fa-circle-o-notch fa-spin me-2 d-none"/> Creating PostgreSQL database...</li>
+                        <li id="step-3" class="mb-2 text-muted"><i class="fa fa-circle-o-notch fa-spin me-2 d-none"/> Securing Biometric data storage...</li>
+                        <li id="step-4" class="mb-2 text-muted"><i class="fa fa-circle-o-notch fa-spin me-2 d-none"/> Finalizing admin access...</li>
+                    </ul>
+
+                    <div id="ready-action" class="mt-4 d-none">
+                        <a id="btn-launch" href="#" class="btn btn-success btn-lg px-5 py-3 rounded-pill fw-bold shadow animate__animated animate__pulse animate__infinite">
+                            <i class="fa fa-rocket me-2"/> Launch My Workspace
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROVISIONING JS LOGIC -->
+            <script type="text/javascript">
+            <![CDATA[
+                document.addEventListener('DOMContentLoaded', function() {
+                    const tenantId = """ + str(tenant.id) + """; // Odoo Inject
+                    let progress = 10;
+                    const progressBar = document.getElementById('provision-bar');
+                    
+                    // Simulasi Animasi Step (Agar terlihat 'Sibuk')
+                    const steps = [
+                        { p: 35, id: 'step-2' },
+                        { p: 65, id: 'step-3' },
+                        { p: 90, id: 'step-4' }
+                    ];
+
+                    let currentIdx = 0;
+                    const interval = setInterval(() => {
+                        if (currentIdx < steps.length) {
+                            const step = steps[currentIdx];
+                            progressBar.style.width = step.p + '%';
+                            
+                            const prevEl = document.getElementById('step-' + (currentIdx + 1));
+                            if(prevEl) prevEl.classList.replace('text-primary','text-success');
+
+                            const el = document.getElementById(step.id);
+                            el.classList.replace('text-muted', 'text-primary');
+                            el.querySelector('.fa').classList.remove('d-none');
+                            
+                            currentIdx++;
+                        }
+                    }, 4000);
+
+                    // POLLING KE MASTER DB: Cek status asli
+                    const checkStatus = setInterval(() => {
+                        fetch('/workspace/status/' + """ + str(tenant.id) + """, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ params: {} })
+                        }).then(r => r.json()).then(data => {
+                            const res = data.result;
+                            if (res.state === 'active') {
+                                clearInterval(checkStatus);
+                                clearInterval(interval); // Hentikan simulasi
+                                
+                                // Set 100%
+                                progressBar.style.width = '100%';
+                                progressBar.classList.remove('progress-bar-animated');
+                                
+                                // Show Launch Button
+                                document.getElementById('ready-action').classList.remove('d-none');
+                                document.getElementById('btn-launch').href = res.subdomain_url;
+                            }
+                        });
+                    }, 3000); // Cek tiap 3 detik
+                });
+            ]]>
+            </script>
+        </t>
+    </template>
+</odoo>

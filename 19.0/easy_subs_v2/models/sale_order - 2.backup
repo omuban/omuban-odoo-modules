@@ -1,0 +1,37 @@
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api
+
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+
+    is_cp_saas_order = fields.Boolean("CleanPresence SaaS Order", default=False)
+    
+    # Status sederhana untuk mempermudah Admin
+    cp_status = fields.Selection([
+        ('draft', 'Awaiting Payment'),
+        ('paid', 'Fully Paid & Confirmed')
+    ], string="SaaS Status", default='draft', tracking=True)
+
+    def action_mark_as_paid(self):
+        """ Fungsi yang dipanggil saat Webhook Gateway menyatakan Sukses """
+        for order in self:
+            if order.state in ['draft', 'sent']:
+                order.action_confirm() # Ubah ke 'Sale Order'
+            
+            # Cek jika belum ada invoice, buat baru
+            if not order.invoice_ids:
+                invoice = order._create_invoices()
+                invoice.action_post() # Validasi/Posting Invoice
+                
+                # Logic: Karena ini SaaS, kita anggap lunas instan via Gateway
+                order.write({'cp_status': 'paid'})
+                
+                # Kirim Email Welcome/Invoice (Akan kita buat templatenya)
+                order._send_saas_welcome_email()
+        return True
+
+    def _send_saas_welcome_email(self):
+        # Placeholder pemicu email
+        template = self.env.ref('easy_subs_v2.email_template_saas_welcome', raise_if_not_found=False)
+        if template:
+            template.send_mail(self.id, force_send=True)

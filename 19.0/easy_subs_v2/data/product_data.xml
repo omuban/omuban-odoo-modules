@@ -1,0 +1,29 @@
+<odoo>
+    <data noupdate="1">
+        <!-- PLAN: GROWTH MONTHLY -->
+        <record id="product_growth_monthly" model="product.template">
+            <field name="name">Growth Plan (Monthly)</field>
+            <field name="is_easy_sub">True</field>
+            <field name="billing_cycle">monthly</field>
+            <field name="plan_group_code">GROWTH</field>
+            <field name="list_price">25.00</field>
+            <field name="seat_limit">5</field>
+            <field name="extra_seat_price">1.5</field>
+            <field name="sale_ok">True</field>
+            <field name="type">service</field>
+        </record>
+
+        <!-- PLAN: GROWTH YEARLY -->
+        <record id="product_growth_yearly" model="product.template">
+            <field name="name">Growth Plan (Yearly)</field>
+            <field name="is_easy_sub">True</field>
+            <field name="billing_cycle">yearly</field>
+            <field name="plan_group_code">GROWTH</field>
+            <field name="list_price">250.00</field>
+            <field name="seat_limit">5</field>
+            <field name="extra_seat_price">1.5</field>
+            <field name="sale_ok">True</field>
+            <field name="type">service</field>
+        </record>
+    </data>
+</odoo>

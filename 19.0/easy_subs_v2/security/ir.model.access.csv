@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_saas_tenant_admin,saas.tenant.admin,model_saas_tenant,base.group_system,1,1,1,1
+access_saas_tenant_user,saas.tenant.user,model_saas_tenant,base.group_user,1,1,1,1
+access_saas_tenant_portal,saas.tenant.portal,model_saas_tenant,base.group_portal,1,0,1,0
+access_easy_beauty_price_admin,easy.beauty.price.admin,model_easy_beauty_price,base.group_system,1,1,1,1
+access_easy_beauty_price_public,easy.beauty.price.public,model_easy_beauty_price,,1,0,0,0
+access_easy_plan_addon_matrix_admin,easy.plan.addon.matrix.admin,model_easy_plan_addon_matrix,base.group_system,1,1,1,1
+access_easy_plan_addon_matrix_public,easy.plan.addon.matrix.public,model_easy_plan_addon_matrix,,1,0,0,0

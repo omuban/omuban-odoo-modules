@@ -1,0 +1,36 @@
+<odoo>
+    <!-- Template Dasar Dokumen Hukum -->
+    <template id="legal_layout" name="Legal Layout">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5" style="max-width: 800px;">
+                <t t-out="0"/>
+                <hr class="mt-5"/>
+                <div class="text-center text-muted small">
+                    <p>CleanPresence is a product of [Your Company Name].</p>
+                    <p>Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders.</p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="privacy_policy" name="Privacy Policy">
+        <t t-call="easy_subs.legal_layout">
+            <h1>Privacy Policy</h1>
+            <p class="lead">Last updated: January 12, 2026</p>
+            <p>At CleanPresence, we respect your privacy and are committed to protecting your personal data, especially biometric photo and location data (GeoFencing) used for attendance verification.</p>
+            <h3>1. Data We Collect</h3>
+            <p>We collect location data and photos only when you perform clock-in/out actions. This data is stored securely in isolated tenant databases.</p>
+            <!-- Tambahkan detail lainnya nanti sesuai standar GDPR -->
+        </t>
+    </template>
+
+    <template id="terms_of_service" name="Terms of Service">
+        <t t-call="easy_subs.legal_layout">
+            <h1>Terms of Service</h1>
+            <p>By using CleanPresence, you agree to these terms. Our service is provided "as is" for business attendance management.</p>
+            <!-- Tambahkan detail lainnya -->
+        </t>
+    </template>
+
+    <!-- Route untuk Footer (Nanti ditambahkan di Footer Website) -->
+</odoo>

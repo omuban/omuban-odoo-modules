@@ -1,0 +1,54 @@
+<odoo>
+    <record id="view_order_form_easy_approve" model="ir.ui.view">
+        <field name="name">sale.order.form.easy.approve</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <!-- BUTTON A -->
+                <!-- <button name="action_button_a_verify_payment" 
+                    string="(A) Setujui Pembayaran" 
+                    type="object" 
+                    class="btn-secondary"
+                    invisible="not is_proof_uploaded or is_payment_verified"/> -->
+                
+                <!-- BUTTON B (Hanya muncul jika A sudah, tapi B belum) -->
+                <!-- <button name="action_button_b_grant_access" 
+                    string="(B) Aktifkan Akses" 
+                    type="object" 
+                    class="btn-warning"
+                    invisible="not is_payment_verified or is_access_granted"/> -->
+                
+                <!-- BUTTON AB (Cara Lama / Langsung) -->
+                <button name="action_button_ab_execute_all" 
+                    string="⚡ Setujui Pembayaran dan Aktifkan Akses" 
+                    type="object" 
+                    class="btn-success"
+                    invisible="not is_proof_uploaded or is_payment_verified"/>
+            </header>
+            
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <separator string="Bukti Transfer Client"/>
+                <field name="is_proof_uploaded" invisible="1"/>
+                <field name="is_payment_verified" readonly="1"/>
+                <field name="is_access_granted" readonly="1"/>
+                
+                <!-- <field name="payment_proof" widget="image" class="oe_avatar" options="{'size': [250, 250]}"/> -->
+                <!-- <field name="payment_proof_name"/> -->
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Filter List View -->
+    <record id="view_sales_order_filter_easy" model="ir.ui.view">
+        <field name="name">sale.order.filter.easy</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+             <filter name="my_sale_orders_filter" position="after">
+                <separator/>
+                <filter string="Butuh Approval" name="proof_uploaded" domain="[('is_proof_uploaded', '=', True), ('is_access_granted', '=', False)]"/>
+            </filter>
+        </field>
+    </record>
+</odoo>

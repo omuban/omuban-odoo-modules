@@ -1,0 +1,42 @@
+<odoo>
+    <record id="res_config_settings_view_cp_saas_v2" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.easy.subs.v2</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <!-- Tab menu khusus untuk SaaS di Settings -->
+                <div class="app_settings_block" data-string="CleanPresence SaaS" string="CleanPresence SaaS" data-key="easy_subs_v2">
+                    
+                    <h2>Global Configuration</h2>
+                    <div class="row mt16 o_settings_container">
+                        <!-- Product Mapping Section -->
+                        <div class="col-12 col-lg-6 o_setting_box" id="products_mapping">
+                            <div class="o_setting_right_pane">
+                                <label for="cp_seat_product_id" class="fw-bold"/>
+                                <div class="text-muted">Produk yang digunakan sebagai hitungan extra seats</div>
+                                <field name="cp_seat_product_id" class="w-100"/>
+                                
+                                <label for="cp_setup_product_id" class="fw-bold mt16"/>
+                                <div class="text-muted">Produk untuk biaya aktivasi (setup fee)</div>
+                                <field name="cp_setup_product_id" class="w-100"/>
+                            </div>
+                        </div>
+
+                        <!-- API Keys Section -->
+                        <div class="col-12 col-lg-6 o_setting_box" id="payment_api_config">
+                            <div class="o_setting_right_pane">
+                                <label for="paddle_client_token" class="fw-bold"/>
+                                <field name="paddle_client_token" placeholder="Client token dari Paddle..."/>
+                                
+                                <label for="xendit_public_key" class="fw-bold mt16"/>
+                                <field name="xendit_public_key" placeholder="Public key dari Xendit..."/>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="pricing_page_v2" name="CleanPresence Pricing V2">
+        <t t-call="website.layout">
+            <style>
+                :root { --cp-primary: #00A5BC; --cp-bg-light: #f8fbfc; }
+                .wizard-slide, h1, h2, h3, h4, h5, h6, div, span, button, i, p, input { transform: none !important; animation: none !important; }
+                .fa-spin { animation: fa-spin 2s infinite linear !important; }
+
+                /* Styles */
+                .clean-price-val { font-size: 2.3rem; font-weight: 800; color: var(--cp-primary); white-space: nowrap; }
+                .summary-card { background: #f9f9f9; border-radius: 20px; border: 1px solid #eee; }
+                .v2-addon-card { cursor: pointer; border: 2px solid #f0f0f0; border-radius: 12px; transition: all 0.2s; background: white; height: 100%; }
+                .v2-addon-card.active { border-color: var(--cp-primary); background-color: #f0fbfc; }
+                
+                /* Input Seats Style */
+                .seat-input-container { background: #fff; border: 1px solid #ddd; border-radius: 50px; padding: 5px; width: 180px; }
+                .seat-num-input { width: 55px; font-weight: 800; text-align: center; border: none; font-size: 1.3rem; outline: none; background: transparent; }
+                .btn-seat-circle { border-radius: 50% !important; width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center; background: var(--cp-primary); color: white; border: none; }
+                
+                input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+                .price-card-wrapper { min-height: 160px; display: flex; flex-direction: column; justify-content: center; }
+            </style>
+
+            <input type="hidden" id="js_val_curr_sym" t-att-value="current_pricelist.currency_id.symbol"/>
+            <input type="hidden" id="js_val_seat_price" t-att-value="seat_price"/>
+            <input type="hidden" id="js_val_setup_fee" t-att-value="setup_price"/>
+            <input type="hidden" id="js_val_addon_map" t-att-value="addon_map_json"/>
+
+            <div id="saas_wizard" class="container mt-5 mb-5" style="max-width: 1150px;">
+                <!-- PROGRESS -->
+                <div class="row justify-content-center mb-5 text-center">
+                    <div class="col-md-7">
+                        <ul class="nav nav-pills nav-justified bg-white border rounded-pill p-1 shadow-sm">
+                            <li class="nav-item"><a class="nav-link active rounded-pill fw-bold" id="st-1">1. Plan</a></li>
+                            <li class="nav-item"><a class="nav-link disabled py-2" id="st-2">2. Customize</a></li>
+                            <li class="nav-item"><a class="nav-link disabled py-2" id="st-3">3. Launch</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 1 -->
+                <div id="v-slide1" class="wizard-slide text-center">
+                    <div class="dropdown mb-4">
+                        <button class="btn btn-white border shadow-sm rounded-pill px-4 fw-bold text-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fa fa-globe me-2"/> <t t-esc="current_pricelist.currency_id.name"/>
+                        </button>
+                        <ul class="dropdown-menu shadow border-0 text-center">
+                            <t t-foreach="pricelists" t-as="pl">
+                                <li><a class="dropdown-item py-2 fw-bold" t-attf-href="/shop/change_pricelist/{{pl.id}}?r=/pricing"><t t-esc="pl.currency_id.name"/></a></li>
+                            </t>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-center align-items-center mb-5 fw-bold small text-uppercase">
+                        <span class="text-muted">MONTHLY</span>
+                        <div class="form-check form-switch mx-3">
+                            <input class="form-check-input" style="width:55px; height:28px; cursor:pointer;" type="checkbox" id="v2CycleToggle"/>
+                        </div>
+                        <span class="text-dark text-uppercase">ANNUAL <span class="badge rounded-pill bg-success ms-1">Save 2 Months</span></span>
+                    </div>
+
+                    <div class="row justify-content-center g-4">
+                        <t t-foreach="plan_groups.values()" t-as="group">
+                            <t t-if="group['monthly'] or group['yearly']">
+                                <div class="col-md-5 mb-4">
+                                    <div class="card h-100 border-0 shadow-lg text-center rounded-4 p-lg-5 p-4">
+                                        <h2 class="fw-bold text-primary mb-4 text-uppercase"><t t-esc="group['monthly'].plan_group_code if group['monthly'] else group['yearly'].plan_group_code"/></h2>
+                                        <div class="price-card-wrapper">
+                                            <div class="v2-monthly-view text-center">
+                                                <t t-if="group['monthly']">
+                                                    <t t-set="pm" t-value="current_pricelist._get_product_price(group['monthly'], 1.0)"/>
+                                                    <div class="clean-price-val"><span t-esc="pm" t-options='{"widget": "monetary", "display_currency": current_pricelist.currency_id}'/></div>
+                                                    <p class="text-muted small">per month</p>
+                                                    <button class="btn btn-primary btn-lg w-100 py-3 rounded-pill mt-4 next-slide shadow" 
+                                                            t-att-data-plan-id="group['monthly'].id" t-att-data-plan-name="group['monthly'].plan_group_code"
+                                                            t-att-data-plan-price="pm" t-att-data-inc-seats="group['monthly'].seat_limit"
+                                                            t-att-data-duration="group['monthly'].sub_duration_days"
+                                                            t-att-data-billing="'Monthly'" data-next="v-slide2">Get Started</button>
+                                                </t>
+                                            </div>
+                                            <div class="v2-yearly-view d-none">
+                                                <t t-if="group['yearly']">
+                                                    <t t-set="py" t-value="current_pricelist._get_product_price(group['yearly'], 1.0)"/>
+                                                    <div class="clean-price-val text-success"><span t-esc="py" t-options='{"widget": "monetary", "display_currency": current_pricelist.currency_id}'/></div>
+                                                    <p class="text-muted small text-success fw-bold">billed annually</p>
+                                                    <button class="btn btn-primary btn-lg w-100 py-3 rounded-pill mt-4 next-slide shadow" 
+                                                            t-att-data-plan-id="group['yearly'].id" t-att-data-plan-name="group['yearly'].plan_group_code"
+                                                            t-att-data-plan-price="py" t-att-data-inc-seats="group['yearly'].seat_limit"
+                                                            t-att-data-duration="group['yearly'].sub_duration_days"
+                                                            t-att-data-billing="'Yearly'" data-next="v-slide2">Get Started</button>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        <ul class="text-start list-unstyled mt-5 border-top pt-4">
+                                            <li class="mb-2 fw-bold"><i class="fa fa-users text-primary me-2"/> <t t-esc="group['monthly'].seat_limit or group['yearly'].seat_limit"/> Seats Included</li>
+                                            <t t-set="desc_p" t-value="group['monthly'] or group['yearly']"/>
+                                            <t t-if="desc_p.description_sale"><t t-foreach="desc_p.description_sale.split('\n')" t-as="l"><li t-if="l.strip()" class="small text-muted mb-1">✓ <t t-esc="l"/></li></t></t>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+
+                    <div class="row justify-content-center mt-5 pb-5">
+                        <t t-foreach="plan_groups.values()" t-as="group">
+                            <t t-if="group['trial']">
+                                <div class="col-md-10 text-start">
+                                    <div class="card card-trial rounded-4 p-4 border-primary shadow-sm bg-white">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-8">
+                                                <h4 class="fw-bold mb-1 text-dark"><i class="fa fa-bolt text-warning me-2"/> Risk-Free 7-Day Experience</h4>
+                                                <p class="text-muted small mb-0">Experience full featured trial for <t t-esc="group['trial'].seat_limit"/> seats. No commitment required.</p>
+                                            </div>
+                                            <div class="col-lg-4 text-end mt-3 mt-lg-0">
+                                                <button class="btn btn-primary px-5 py-3 fw-bold rounded-pill shadow next-slide" 
+                                                        t-att-data-plan-id="group['trial'].id" t-att-data-plan-name="'Free Trial'"
+                                                        t-att-data-plan-price="0" t-att-data-inc-seats="group['trial'].seat_limit"
+                                                        t-att-data-duration="7" t-att-data-billing="'Trial'" data-next="v-slide2">Start My Trial</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: CUSTOMIZE -->
+                <div id="v-slide2" class="wizard-slide d-none text-start">
+                    <div class="row g-4">
+                        <div class="col-md-7">
+                            <!-- Seat Configuration - Akan disembunyikan via JS jika Trial -->
+                            <div class="card p-5 border-0 shadow rounded-4 bg-white mb-4" id="v2-seat-config-area">
+                                <h3 class="fw-bold mb-3">Capacity Settings</h3>
+                                <div class="p-4 rounded-4 border bg-light d-flex align-items-center justify-content-between mt-3">
+                                    <div>
+                                        <label class="text-muted small uppercase fw-bold d-block mb-1">Additional User Licenses</label>
+                                        <h5 class="mb-0 fw-bold text-dark"><span id="rev-u-price">...</span> / month</h5>
+                                    </div>
+                                    <div class="seat-input-container d-flex align-items-center justify-content-between">
+                                        <button class="btn-seat-circle" id="s-minus"><i class="fa fa-minus"/></button>
+                                        <input type="number" id="s-input-val" class="seat-num-input" value="0"/>
+                                        <button class="btn-seat-circle" id="s-plus"><i class="fa fa-plus"/></button>
+                                    </div>
+                                </div>
+                                <div class="ms-3 mt-3 small text-muted"><i class="fa fa-info-circle me-1"/> Your plan already includes <span id="rev-base-s" class="fw-bold text-dark">0</span> base seats.</div>
+                            </div>
+                            
+                            <div class="card p-5 border-0 shadow-sm rounded-4 bg-white text-center py-4 mb-4 d-none" id="v2-trial-notice-area">
+                                <h5 class="fw-bold mb-1">Trial Version Selected</h5>
+                                <p class="text-muted mb-0 small">Quantity customization is disabled for free 7-day trials.</p>
+                            </div>
+
+                            <h5 class="fw-bold mt-5 mb-3 ms-2 text-dark">Feature Power-ups</h5>
+                            <div id="addon-v2-area" class="row g-3"></div>
+
+                            <div class="mt-5 border-top pt-5 text-center">
+                                <button class="btn btn-primary btn-lg rounded-pill px-5 py-4 w-100 fw-bold shadow next-slide" data-next="v-slide3">Continue to Identifiaction</button>
+                                <button class="btn btn-link mt-2 text-muted prev-slide small shadow-none">Go back and change plan</button>
+                            </div>
+                        </div>
+
+                        <!-- BILLING SUMMARY -->
+                        <div class="col-md-5">
+                            <div class="card p-4 summary-card border-0 shadow h-100">
+                                <h5 class="fw-bold border-bottom pb-3 mb-4">Workspace Selection</h5>
+                                <div class="mb-4 small border-bottom pb-3 text-dark">
+                                    <div class="d-flex justify-content-between mb-2"><span>Selection</span> <span class="fw-bold text-uppercase" id="s-pname">---</span></div>
+                                    <div class="d-flex justify-content-between mb-2"><span>Billing Schema</span> <span class="text-primary fw-bold text-uppercase" id="s-billing">---</span></div>
+                                    <!-- Poin 2: Start - End Dates -->
+                                    <div class="d-flex justify-content-between border-top pt-2 mt-2">
+                                        <span class="text-muted">Subscription Period:</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between text-dark fw-bold">
+                                        <span class="small" id="s-start">Today</span> <span class="small text-primary mx-1">to</span> <span class="small" id="s-end">---</span>
+                                    </div>
+                                </div>
+                                <div class="mb-4 p-4 bg-white border rounded-4 shadow-sm text-center">
+                                    <div class="text-muted small fw-bold mb-1 uppercase">ACTIVE USER CAPACITY</div>
+                                    <div class="h3 fw-bold text-primary mb-0"><span id="s-totalseats">0</span> Members</div>
+                                </div>
+                                <div class="py-1 small border-bottom mb-3 pb-3">
+                                    <div class="d-flex justify-content-between mb-2 text-muted"><span>Workspace Rate</span> <span class="fw-bold text-dark" id="s-baseprice">0</span></div>
+                                    <!-- Poin 3: Surcharge row hidden if trial -->
+                                    <div class="d-flex justify-content-between text-primary fw-bold" id="row-s-extra">
+                                        <span>Seat Surcharge (<span id="s-ext-qty">0</span>)</span> <span id="s-ext-price">0</span>
+                                    </div>
+                                    <div id="row-s-addons" class="mt-2 border-top pt-2"></div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-dark mb-4 fw-bold">
+                                    <span>Cloud Platform Deployment (One-time)</span> <span id="s-setup">0</span>
+                                </div>
+                                <div class="border-top pt-4 mt-auto text-end bg-white rounded-4 p-3 border">
+                                    <p class="text-muted small mb-0 fw-bold uppercase">Amount due for activation:</p>
+                                    <div class="h2 fw-bold text-dark d-flex justify-content-end align-items-center">
+                                        <span id="s-curr" class="me-2 fs-4 text-muted fw-normal"></span><span id="s-grand" class="text-primary">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: IDENTITY -->
+                <div id="v-slide3" class="wizard-slide d-none p-lg-5 text-center">
+                    <div class="card p-5 border-0 shadow rounded-4 mx-auto bg-white text-start shadow" style="max-width: 600px;">
+                        <h2 class="fw-bold text-center mb-5 uppercase h3 text-dark">Instance Branding</h2>
+                        <label class="fw-bold small text-muted mb-2 text-uppercase">Desired Digital Address</label>
+                        <div class="input-group input-group-lg border rounded shadow-sm overflow-hidden mb-2">
+                            <input type="text" id="in-sub" class="form-control border-0" placeholder="legal-group"/>
+                            <span class="input-group-text bg-white border-0 fw-bold text-muted">.cleanpresence.com</span>
+                        </div>
+                        <p id="st-sub" class="small ms-2 mb-4 text-muted fst-italic">Workspace URL availability.</p>
+
+                        <label class="fw-bold small text-muted mb-2 uppercase">Official Legal Name</label>
+                        <input type="text" id="in-comp" class="form-control form-control-lg border-0 bg-light shadow-none mb-5" placeholder="Full Company Entity Name"/>
+
+                        <button id="st-action" class="btn btn-primary btn-lg w-100 py-4 fw-bold shadow shadow-lg rounded-pill">LAUNCH SYSTEM NOW</button>
+                        <div class="text-center mt-4 text-muted cursor-pointer prev-slide fw-bold" data-prev="v-slide2">Go back to configurator</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JS ENGINE FIXED FOR DATES & TRIAL LOGIC -->
+            <script type="text/javascript">
+            <![CDATA[
+                document.addEventListener('DOMContentLoaded', function() {
+                    const C_SYM = document.getElementById('js_val_curr_sym')?.value || '$';
+                    const U_SEAT = parseFloat(document.getElementById('js_val_seat_price')?.value || 0);
+                    const U_SETUP = parseFloat(document.getElementById('js_val_setup_fee')?.value || 0);
+                    const A_MAP = JSON.parse(document.getElementById('js_val_addon_map')?.value || '{}');
+
+                    let odr = { pid: 0, n: '', pr: 0, bs: 0, es: 0, ad: {}, bill: '', dur: 30 };
+
+                    const fmt = (v) => v.toLocaleString('id-ID', { minimumFractionDigits: 2 });
+                    function put(id, t) { const e = document.getElementById(id); if(e) e.innerText = t; }
+
+                    function calc() {
+                        let adP = 0;
+                        const adL = document.getElementById('row-s-addons');
+                        if(adL) adL.innerHTML = '';
+                        Object.values(odr.ad).forEach(a => {
+                            adP += a.p;
+                            if(adL) adL.innerHTML += `<div class="d-flex justify-content-between mb-1"><span>${a.n}</span><span class="fw-bold text-primary">${C_SYM} ${fmt(a.p)}</span></div>`;
+                        });
+                        const xtra = odr.es * U_SEAT;
+                        const total = odr.pr + xtra + adP + U_SETUP;
+
+                        put('s-ext-qty', odr.es);
+                        put('s-ext-price', C_SYM + ' ' + fmt(xtra));
+                        put('s-totalseats', odr.bs + odr.es);
+                        put('s-grand', fmt(total));
+                    }
+
+                    document.querySelectorAll('.next-slide').forEach(b => {
+                        b.addEventListener('click', function() {
+                            const go = this.dataset.next;
+                            if(go === 'v-slide2' && this.dataset.planId) {
+                                odr = {
+                                    pid: parseInt(this.dataset.planId), n: this.dataset.planName, 
+                                    pr: parseFloat(this.dataset.planPrice || 0),
+                                    bs: parseInt(this.dataset.incSeats || 1), 
+                                    es: 0, ad: {}, bill: this.dataset.billing,
+                                    dur: parseInt(this.dataset.duration || 30)
+                                };
+
+                                // Dates Calculation
+                                const startD = new Date(); const endD = new Date();
+                                endD.setDate(startD.getDate() + odr.dur);
+                                put('s-start', startD.toLocaleDateString('en-GB', {day:'numeric', month:'short'}));
+                                put('s-end', endD.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}));
+
+                                // Trial UI Filtering (Point 3)
+                                const isTrial = odr.bill === 'Trial';
+                                document.getElementById('v2-seat-config-area')?.classList.toggle('d-none', isTrial);
+                                document.getElementById('v2-trial-notice-area')?.classList.toggle('d-none', !isTrial);
+                                document.getElementById('row-s-extra')?.classList.toggle('d-none', isTrial);
+
+                                put('s-pname', odr.n);
+                                put('s-baseprice', C_SYM + ' ' + fmt(odr.pr));
+                                put('rev-base-s', odr.bs);
+                                put('rev-u-price', C_SYM + ' ' + fmt(U_SEAT));
+                                put('s-curr', C_SYM);
+                                put('s-setup', C_SYM + ' ' + fmt(U_SETUP));
+                                put('s-billing', odr.bill + (isTrial ? '' : ' Billing'));
+
+                                const area = document.getElementById('addon-v2-area');
+                                if(area) {
+                                    area.innerHTML = '';
+                                    const options = A_MAP[odr.pid.toString()] || {};
+                                    Object.entries(options).forEach(([aid, d]) => {
+                                        area.innerHTML += `
+                                            <div class="col-md-6 mb-2">
+                                                <div class="card v2-addon-card p-3 shadow-sm border" data-aid="${aid}" data-name="${d.name}" data-price="${d.price}">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h6 class="fw-bold mb-0" style="font-size:0.8rem">${d.name}</h6>
+                                                        <div class="form-check form-switch"><input class="form-check-input shadow-none" type="checkbox"/></div>
+                                                    </div>
+                                                    <p class="small text-primary mt-2 fw-bold mb-0">${C_SYM} ${fmt(d.price)}/mo</p>
+                                                </div>
+                                            </div>`;
+                                    });
+                                    document.querySelectorAll('.v2-addon-card').forEach(ac => {
+                                        ac.onclick = function(e) {
+                                            const ck = this.querySelector('input'); if(e.target !== ck) ck.checked = !ck.checked;
+                                            this.classList.toggle('active', ck.checked);
+                                            if(ck.checked) odr.ad[this.dataset.aid] = { n: this.dataset.name, p: parseFloat(this.dataset.price) };
+                                            else delete odr.ad[this.dataset.aid];
+                                            calc();
+                                        };
+                                    });
+                                }
+                                if(document.getElementById('s-input-val')) document.getElementById('s-input-val').value = 0;
+                                calc();
+                            }
+                            document.querySelectorAll('.wizard-slide').forEach(s => s.classList.add('d-none'));
+                            document.getElementById(go)?.classList.remove('d-none');
+                            const sn = parseInt(go.slice(-1));
+                            for(let i=1;i<=3;i++){
+                                const dot = document.getElementById('st-'+i); if(dot){ dot.classList.toggle('active', i===sn); dot.classList.toggle('disabled', i>sn); }
+                            }
+                            window.scrollTo(0,0);
+                        });
+                    });
+
+                    document.querySelectorAll('.prev-slide').forEach(b => { 
+                        b.onclick = () => {
+                            document.querySelectorAll('.wizard-slide').forEach(s => s.classList.add('d-none'));
+                            document.getElementById('v-slide' + (parseInt(odr.pid?2:1))).classList.remove('d-none');
+                            if(!odr.pid) document.getElementById('v-slide1').classList.remove('d-none');
+                            window.scrollTo(0,0);
+                        };
+                    });
+
+                    const inSeats = document.getElementById('s-input-val');
+                    if(inSeats) {
+                        document.getElementById('s-plus').onclick = () => { inSeats.value = parseInt(inSeats.value)+1; inSeats.dispatchEvent(new Event('change')); };
+                        document.getElementById('s-minus').onclick = () => { if(inSeats.value > 0) inSeats.value = parseInt(inSeats.value)-1; inSeats.dispatchEvent(new Event('change')); };
+                        inSeats.onchange = function() { odr.es = parseInt(this.value) || 0; calc(); };
+                    }
+                    
+                    document.getElementById('v2CycleToggle').onchange = function() {
+                        const isY = this.checked;
+                        document.querySelectorAll('.v2-monthly-view').forEach(v => v.classList.toggle('d-none', isY));
+                        document.querySelectorAll('.v2-yearly-view').forEach(v => v.classList.toggle('d-none', !isY));
+                    }
+
+                    document.getElementById('st-action').onclick = function() {
+                        alert("OK, Prepare paddle.js for Workspace Address: " + document.getElementById('in-sub').value);
+                    }
+                });
+            ]]>
+            </script>
+        </t>
+    </template>
+</odoo>

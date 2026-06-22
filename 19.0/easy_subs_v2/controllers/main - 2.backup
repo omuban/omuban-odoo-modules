@@ -1,0 +1,207 @@
+# -*- coding: utf-8 -*-
+import json
+import requests
+import base64
+from odoo import http
+from odoo.http import request
+
+class CleanPresenceSaasV2(http.Controller):
+
+    # ==========================================
+    # 1. HALAMAN UTAMA /PRICING (WORKING)
+    # ==========================================
+    @http.route('/pricing', type='http', auth='public', website=True)
+    def pricing_page(self, **kw):
+        website = request.website
+        
+        # Logic Pricelist Odoo 19
+        pl_id = request.session.get('website_sale_current_pl')
+        if pl_id:
+            current_pricelist = request.env['product.pricelist'].sudo().browse(pl_id)
+        else:
+            try:
+                current_pricelist = website.get_current_pricelist()
+            except Exception:
+                current_pricelist = website.pricelist_ids[:1] or request.env['product.pricelist'].sudo().search([], limit=1)
+
+        # Ambil Core Plans (Core Plans Only)
+        core_products = request.env['product.template'].sudo().search([
+            ('cp_type', '=', 'core'),
+            ('sale_ok', '=', True)
+        ])
+
+        # Ambil Seat & Setup Product dari Settings
+        get_param = request.env['ir.config_parameter'].sudo().get_param
+        seat_p_id = int(get_param('easy_subs_v2.seat_product_id', 0))
+        setup_p_id = int(get_param('easy_subs_v2.setup_product_id', 0))
+        
+        seat_product = request.env['product.template'].sudo().browse(seat_p_id)
+        setup_product = request.env['product.template'].sudo().browse(setup_p_id)
+
+        # Build Map
+        plan_groups = {}
+        addon_data_map = {} 
+
+        for p in core_products:
+            # Grouping
+            g_code = (p.plan_group_code or 'DEFAULT').upper()
+            if g_code not in plan_groups:
+                plan_groups[g_code] = {'monthly': False, 'yearly': False, 'trial': False}
+            
+            plan_groups[g_code][p.billing_cycle] = p
+
+            # Addon Matrix per Plan
+            addon_entries = {}
+            for addon_line in p.cp_available_addon_ids.filtered(lambda x: x.currency_id == current_pricelist.currency_id):
+                addon_entries[str(addon_line.addon_product_id.id)] = {
+                    'name': addon_line.addon_product_id.name,
+                    'price': addon_line.special_price,
+                    'desc': addon_line.addon_product_id.description_sale or ''
+                }
+            addon_data_map[str(p.id)] = addon_entries
+
+        vals = {
+            'plan_groups': plan_groups,
+            'current_pricelist': current_pricelist,
+            'pricelists': request.env['product.pricelist'].sudo().search([('selectable', '=', True)]),
+            'seat_price': seat_product.get_beauty_price_by_pricelist(current_pricelist.id) if seat_product.exists() else 1.5,
+            'setup_price': setup_product.get_beauty_price_by_pricelist(current_pricelist.id) if setup_product.exists() else 0,
+            'addon_map_json': json.dumps(addon_data_map),
+            'is_logged_in': True if request.session.uid else False,
+        }
+        return request.render('easy_subs_v2.pricing_page_v2', vals)
+
+    # ==========================================
+    # 2. VALIDASI SUBDOMAIN (WORKING)
+    # ==========================================
+    @http.route('/saas/check_subdomain', type='json', auth='public', website=True)
+    def check_subdomain(self, subdomain):
+        if not subdomain or len(subdomain) < 3:
+            return {'status': 'invalid', 'msg': 'Too short (min 3 chars)'}
+        
+        clean_name = "".join(filter(lambda x: x.isalnum() or x == "-", subdomain)).lower()
+        existing = request.env['saas.tenant'].sudo().search_count([('name', '=', clean_name)])
+        
+        if existing:
+            return {'status': 'taken', 'msg': 'Subdomain already taken'}
+        return {'status': 'available', 'msg': 'Available!', 'clean_name': clean_name}
+
+    # ==========================================
+    # 3. PROSES PEMBAYARAN & PEMBUATAN TENANT
+    # ==========================================
+    @http.route('/workspace/setup', type='json', auth='user', methods=['POST'], website=True)
+    def setup_workspace(self, **post):
+        user = request.env.user
+        subdomain = post.get('subdomain', '').strip().lower()
+        plan_id = int(post.get('plan_id', 0))
+        company_name = post.get('company_name', '')
+        extra_seats = int(post.get('additional_seats', 0))
+
+        # Check existing to prevent multiple DB per account
+        existing_tenant = request.env['saas.tenant'].sudo().search([
+            ('owner_id', '=', user.partner_id.id),
+            ('state', '!=', 'expired')
+        ], limit=1)
+        if existing_tenant:
+            return {'success': False, 'msg': f"Active workspace already exists ({existing_tenant.name})."}
+
+        plan = request.env['product.template'].sudo().browse(plan_id)
+        if not plan.exists():
+            return {'success': False, 'msg': "Invalid Plan Selection."}
+
+        # BUAT MASTER RECORD
+        tenant = request.env['saas.tenant'].sudo().create({
+            'name': subdomain,
+            'company_name': company_name,
+            'owner_id': user.partner_id.id,
+            'plan_id': plan.id,
+            'max_seats': plan.seat_limit + extra_seats,
+            'state': 'provisioning' if plan.billing_cycle == 'trial' else 'pending_payment'
+        })
+
+        # --- JALUR TRIAL ---
+        if plan.billing_cycle == 'trial':
+            return {'success': True, 'gateway': 'free', 'redirect_url': f'/workspace/creating/{tenant.id}'}
+
+        # --- JALUR PAID (Sale Order) ---
+        get_param = request.env['ir.config_parameter'].sudo().get_param
+        seat_p_id = int(get_param('easy_subs_v2.seat_product_id', 0))
+        setup_p_id = int(get_param('easy_subs_v2.setup_product_id', 0))
+
+        curr_pricelist_id = request.website.get_current_pricelist().id
+        order_lines = []
+        
+        # Line 1: Core Plan
+        order_lines.append((0, 0, {
+            'product_id': request.env['product.product'].sudo().search([('product_tmpl_id','=',plan.id)], limit=1).id,
+            'name': f"SaaS Plan: {plan.name}",
+            'product_uom_qty': 1,
+            'price_unit': plan.get_beauty_price_by_pricelist(curr_pricelist_id)
+        }))
+
+        # Line 2: Seats
+        if extra_seats > 0:
+            seat_prod = request.env['product.product'].sudo().search([('product_tmpl_id','=',seat_p_id)], limit=1)
+            order_lines.append((0, 0, {
+                'product_id': seat_prod.id,
+                'name': f"Extra User Seats ({extra_seats} seats)",
+                'product_uom_qty': extra_seats,
+                'price_unit': seat_prod.product_tmpl_id.get_beauty_price_by_pricelist(curr_pricelist_id)
+            }))
+
+        # Line 3: Setup Fee
+        setup_prod = request.env['product.product'].sudo().search([('product_tmpl_id','=',setup_p_id)], limit=1)
+        order_lines.append((0, 0, {
+            'product_id': setup_prod.id,
+            'name': "Setup and Implementation Fee",
+            'product_uom_qty': 1,
+            'price_unit': setup_prod.product_tmpl_id.get_beauty_price_by_pricelist(curr_pricelist_id)
+        }))
+
+        so = request.env['sale.order'].sudo().create({
+            'partner_id': user.partner_id.id,
+            'is_cp_saas_order': True,
+            'pricelist_id': curr_pricelist_id,
+            'order_line': order_lines
+        })
+
+        # Decision based on currency
+        if so.currency_id.name == 'IDR':
+            x_url = self._get_xendit_url(so)
+            return {'success': True, 'gateway': 'xendit', 'pay_url': x_url}
+        else:
+            return {'success': True, 'gateway': 'paddle', 'order_id': so.id, 'amount': so.amount_total}
+
+    def _get_xendit_url(self, order):
+        sec_key = request.env['ir.config_parameter'].sudo().get_param('easy_subs_v2.xendit_key')
+        if not sec_key: return "#"
+        auth = base64.b64encode(f"{sec_key}:".encode()).decode()
+        headers = {"Authorization": f"Basic {auth}", "Content-Type": "application/json"}
+        payload = {
+            "external_id": str(order.id), "amount": order.amount_total,
+            "payer_email": order.partner_id.email,
+            "description": f"CleanPresence Payment: {order.name}",
+            "success_redirect_url": f"{request.website.get_base_url()}/pricing"
+        }
+        try:
+            res = requests.post("https://api.xendit.co/v2/invoices", json=payload, headers=headers, timeout=10)
+            return res.json().get('invoice_url')
+        except: return "#"
+
+    # ==========================================
+    # 4. REDIRECT & LOADING LOGIC
+    # ==========================================
+    @http.route('/workspace/creating/<int:tenant_id>', type='http', auth='user', website=True)
+    def workspace_creating_screen(self, tenant_id, **kw):
+        tenant = request.env['saas.tenant'].sudo().browse(tenant_id)
+        if not tenant.exists() or tenant.owner_id.id != request.env.user.partner_id.id:
+            return request.redirect('/pricing')
+        return request.render('easy_subs_v2.provisioning_loading_screen', {'tenant': tenant})
+
+    @http.route('/workspace/status/<int:tenant_id>', type='json', auth='user')
+    def get_provisioning_status(self, tenant_id):
+        tenant = request.env['saas.tenant'].sudo().browse(tenant_id)
+        return {
+            'state': tenant.state,
+            'subdomain_url': f"http://{tenant.name}.localhost:8069" # Ganti ke .cleanpresence.com di VPS
+        }

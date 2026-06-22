@@ -1,0 +1,20 @@
+<odoo>
+    <record id="email_template_saas_welcome" model="mail.template">
+        <field name="name">SaaS: Payment Confirmed &amp; Setup</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="subject">Welcome to CleanPresence! (Order {{ object.name }})</field>
+        <field name="email_from">{{ object.company_id.email_formatted }}</field>
+        <field name="email_to">{{ object.partner_id.email_formatted }}</field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; padding: 20px;">
+                <h2 style="color: #00A5BC;">Payment Received!</h2>
+                <p>Dear <strong>{{ object.partner_id.name }}</strong>,</p>
+                <p>Thank you for choosing CleanPresence. We have received your payment for the amount of <strong>{{ object.amount_total }} {{ object.currency_id.name }}</strong>.</p>
+                <p>Our systems are currently <strong>preparing your dedicated workspace</strong>. You will receive another email within the next 24 hours once your subdomain is ready for use.</p>
+                <hr/>
+                <p style="font-size: 12px; color: #888;">Order ID: {{ object.name }} | Merchant of Record: CleanPresence Int.</p>
+            </div>
+        </field>
+        <field name="report_template_ids" eval="[(4, ref('account.account_invoices'))]"/>
+    </record>
+</odoo>

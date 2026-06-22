@@ -1,0 +1,8 @@
+<odoo>
+    <data>
+        <!-- Kita kembalikan grup ini agar Odoo tidak memaksa menghapusnya dulu -->
+        <record id="group_akses_baca" model="res.groups">
+            <field name="name">Akses Baca (Premium)</field>
+        </record>
+    </data>
+</odoo>

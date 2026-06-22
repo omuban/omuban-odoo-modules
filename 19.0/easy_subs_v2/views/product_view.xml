@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_easy_subs_v2_form" model="ir.ui.view">
+        <field name="name">product.template.easy.subs.v2.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <page name="general_information" position="after">
+                <page string="SaaS Configuration V2">
+                    <group>
+                        <group string="Activation Control">
+                            <field name="is_saas_plan"/>
+                            <field name="cp_type"/>
+                        </group>
+                        <group string="Identity" invisible="not is_saas_plan">
+                            <field name="plan_group_code" placeholder="e.g. GROWTH"/>
+                            <field name="plan_code" placeholder="CP-TRIAL-01"/>
+                            <field name="billing_cycle"/>
+                            <!-- Poin 1: Penambahan sub_duration_days -->
+                            <field name="sub_duration_days" string="Validity Duration (Days)"/>
+                            <field name="seat_limit" invisible="cp_type != 'core'"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Beauty Pricing Control" invisible="not is_saas_plan">
+                        <field name="beauty_price_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="currency_id"/>
+                                <field name="fixed_price" string="Plan Beauty Price"/>
+                            </list>
+                        </field>
+                    </group>
+
+                    <group string="Available Power-Ups (Add-ons)" invisible="cp_type != 'core'">
+                        <field name="cp_available_addon_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="addon_product_id"/>
+                                <field name="currency_id"/>
+                                <field name="special_price"/>
+                            </list>
+                        </field>
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>
