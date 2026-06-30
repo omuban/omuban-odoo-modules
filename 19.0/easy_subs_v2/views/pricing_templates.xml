@@ -1,47 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="pricing_page_v2" name="CleanPresence Pricing V2">
+    <template id="pricing_page_clean" name="CleanPresence Pricing V2">
         <t t-call="website.layout">
             <style>
                 :root { --cp-primary: #00A5BC; --cp-bg-light: #f8fbfc; }
-                .wizard-slide, h1, h2, h3, h4, h5, h6, div, span, button, i, p, input { transform: none !important; animation: none !important; transition: none !important; }
-                .fa-spin { animation: fa-spin 2s infinite linear !important; }
-                .nav-pills .nav-link.active { background-color: var(--cp-primary) !important; color: white !important; font-weight: bold; }
-                .currency-btn { background: white; border: 1px solid #dee2e6; border-radius: 50px; font-weight: 700; color: var(--cp-primary); padding: 8px 24px; }
-                .clean-price-val { font-size: 2.3rem; font-weight: 800; color: var(--cp-primary); white-space: nowrap; }
-                .summary-card { background: #f9f9f9; border-radius: 20px; border: 1px solid #eee; }
-                .v2-addon-card { cursor: pointer; border: 2px solid #f0f0f0; border-radius: 12px; background: white; transition: border 0.2s; }
-                .v2-addon-card.active { border-color: var(--cp-primary); background-color: #f0fbfc; }
-                .seat-num-in { width: 60px; font-weight: 800; text-align: center; border: none; font-size: 1.3rem; background: transparent; outline: none; }
-                .btn-seat-circle { border-radius: 50% !important; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: var(--cp-primary); color: white; border: none; }
-                input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+                .wizard-slide, h1, h2, h3, h4, h5, h6, div, span, button, i, p, input { 
+                    transform: none !important; animation: none !important; transition: none !important; 
+                }
+                .nav-pills .nav-link { border-radius: 50px !important; font-size: 0.85rem; padding: 10px 25px; color: #6c757d; border: 1px solid transparent; }
+                .nav-pills .nav-link.active { background-color: var(--cp-primary) !important; font-weight: bold; color: white !important; }
+                .currency-btn { background: white; border: 1px solid #dee2e6; border-radius: 50px; font-weight: 700; color: var(--cp-primary); padding: 8px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+                .price-card { border-radius: 20px; border: none; box-shadow: 0 5px 25px rgba(0,0,0,0.08); }
+                .price-val-display { font-size: 2.3rem; font-weight: 800; color: var(--cp-primary); white-space: nowrap; }
+                .summary-card { background: #f9f9f9; border-radius: 24px; border: 1px solid #eee; height: 100%; position: sticky; top: 100px; }
                 .price-card-wrapper { min-height: 160px; display: flex; flex-direction: column; justify-content: center; }
             </style>
 
-            <!-- Variables Data for JavaScript -->
-            <input type="hidden" id="js_curr_sym" t-att-value="current_pricelist.currency_id.symbol"/>
-            <input type="hidden" id="js_seat_price" t-att-value="seat_price"/>
-            <input type="hidden" id="js_setup_fee" t-att-value="setup_price"/>
-            <input type="hidden" id="js_addon_map" t-att-value="addon_map_json"/>
+            <!-- METADATA DATA SOURCE FOR JS -->
+            <input type="hidden" id="js_data_setup_fee" t-att-value="setup_fee" />
+            <input type="hidden" id="js_data_symbol"
+                t-att-value="current_pricelist.currency_id.symbol" />
 
-            <div id="saas_wizard" class="container mt-5 mb-5" style="max-width: 1200px;">
-                
-                <!-- PROGRESS & CURRENCY -->
+            <div id="saas_wizard" class="container mt-5 mb-5" style="max-width: 1100px;">
+                <!-- PROGRESS and CURRENCY -->
                 <div class="text-center mb-5">
                     <div style="max-width: 650px; margin: 0 auto;">
-                        <ul class="nav nav-pills nav-justified bg-white border rounded-pill p-1 shadow-sm">
-                            <li class="nav-item"><a class="nav-link active rounded-pill fw-bold" id="st-1">1. Choose Plan</a></li>
-                            <li class="nav-item"><a class="nav-link disabled py-2" id="st-2">2. Config</a></li>
-                            <li class="nav-item"><a class="nav-link disabled py-2" id="st-3">3. Launch</a></li>
+                        <ul
+                            class="nav nav-pills nav-justified bg-white border rounded-pill p-1 shadow-sm">
+                            <li class="nav-item">
+                                <a class="nav-link active rounded-pill fw-bold" id="v2-st-1">1.
+                                    Choose Plan</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link rounded-pill text-muted py-2 disabled"
+                                    id="v2-st-2">2. Config</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link rounded-pill text-muted py-2 disabled"
+                                    id="v2-st-3">3. Launch</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="dropdown mt-4">
-                        <button class="currency-btn dropdown-toggle border-0 shadow-sm" type="button" data-bs-toggle="dropdown">
-                            <i class="fa fa-globe me-2"/> <t t-esc="current_pricelist.currency_id.name"/>
+                        <button
+                            class="currency-btn dropdown-toggle border-0 shadow-sm text-uppercase"
+                            type="button" data-bs-toggle="dropdown">
+                            <i class="fa fa-globe me-2" />
+                            <t t-esc="current_pricelist.currency_id.name" />
                         </button>
-                        <ul class="dropdown-menu shadow border-0 mt-2">
+                        <ul class="dropdown-menu shadow border-0 text-center rounded-3">
                             <t t-foreach="pricelists" t-as="pl">
-                                <li><a class="dropdown-item py-2 fw-bold" t-attf-href="/shop/change_pricelist/{{pl.id}}?r=/pricing"><t t-esc="pl.currency_id.name"/></a></li>
+                                <li>
+                                    <a class="dropdown-item py-2 fw-bold"
+                                        t-attf-href="/shop/change_pricelist/{{pl.id}}?r=/pricing">
+                                        <t t-esc="pl.currency_id.name" />
+                                    </a>
+                                </li>
                             </t>
                         </ul>
                     </div>
@@ -50,59 +64,70 @@
                 <!-- SLIDE 1 -->
                 <div id="v-slide1" class="wizard-slide">
                     <div class="text-center mb-5">
-                        <h1 class="fw-bold h1">Select Your Basis</h1>
-                        <div class="d-flex justify-content-center align-items-center mt-3 small fw-bold">
-                            <span class="text-muted">MONTHLY</span>
+                        <h1 class="fw-bold h1">Pilih Paket Kapasitas</h1>
+                        <div
+                            class="d-flex justify-content-center align-items-center mt-3 small fw-bold">
+                            <span class="text-muted">BULANAN</span>
                             <div class="form-check form-switch mx-3">
-                                <input class="form-check-input" style="width:55px; height:28px;" type="checkbox" id="cycleToggle"/>
+                                <input class="form-check-input shadow-none" type="checkbox"
+                                    id="v2CycleToggle"
+                                    style="width:55px;height:25px;cursor:pointer;" />
                             </div>
-                            <span class="text-dark">ANNUAL <span class="badge rounded-pill bg-success ms-1">SAVE 2 MONTHS</span></span>
+                            <span class="text-dark small fw-bold uppercase">Annual <span
+                                    class="badge rounded-pill bg-success ms-1">SAVE 2 MONTHS</span></span>
                         </div>
                     </div>
-                    <div class="row justify-content-center g-4">
+
+                    <div class="row justify-content-center g-4 text-center">
                         <t t-foreach="plan_groups.values()" t-as="group">
                             <t t-if="group['monthly'] or group['yearly']">
                                 <div class="col-md-5 mb-4">
-                                    <div class="card h-100 border-0 shadow-lg text-center rounded-4 p-4">
-                                        <div class="card-body">
-                                            <h3 class="fw-bold text-primary mb-4 text-uppercase"><t t-esc="group['monthly'].plan_group_code if group['monthly'] else group['yearly'].plan_group_code"/></h3>
-                                            <div class="price-card-wrapper">
-                                                <div class="v2-m-view">
-                                                    <t t-if="group['monthly']">
-                                                        <t t-set="p_m" t-value="current_pricelist._get_product_price(group['monthly'], 1.0)"/>
-                                                        <div class="clean-price-val"><span t-esc="p_m" t-options='{"widget": "monetary", "display_currency": current_pricelist.currency_id}'/></div>
-                                                        <p class="text-muted small">per month</p>
-                                                        <button class="btn btn-primary btn-lg w-100 py-3 rounded-pill mt-4 next-slide shadow" 
-                                                                t-att-data-plan-id="group['monthly'].id" 
-                                                                t-att-data-plan-name="group['monthly'].plan_group_code"
-                                                                t-att-data-plan-price="p_m" t-att-data-inc-seats="group['monthly'].seat_limit"
-                                                                t-att-data-duration="group['monthly'].sub_duration_days"
-                                                                t-att-data-billing="'Monthly'" data-next="v-slide2">Get Started</button>
-                                                    </t>
-                                                </div>
-                                                <div class="v2-y-view d-none">
-                                                    <t t-if="group['yearly']">
-                                                        <t t-set="p_y" t-value="current_pricelist._get_product_price(group['yearly'], 1.0)"/>
-                                                        <div class="clean-price-val text-success"><span t-esc="p_y" t-options='{"widget": "monetary", "display_currency": current_pricelist.currency_id}'/></div>
-                                                        <p class="text-muted small text-success fw-bold">billed annually</p>
-                                                        <button class="btn btn-primary btn-lg w-100 py-3 rounded-pill mt-4 next-slide shadow" 
-                                                                t-att-data-plan-id="group['yearly'].id" 
-                                                                t-att-data-plan-name="group['yearly'].plan_group_code"
-                                                                t-att-data-plan-price="p_y" t-att-data-inc-seats="group['yearly'].seat_limit"
-                                                                t-att-data-duration="group['yearly'].sub_duration_days"
-                                                                t-att-data-billing="'Yearly'" data-next="v-slide2">Get Started</button>
-                                                    </t>
-                                                </div>
-                                            </div>
-                                            <ul class="text-start list-unstyled mt-5 border-top pt-4">
-                                                <li class="mb-2 fw-bold small"><i class="fa fa-users text-primary me-2"/> <t t-esc="group['monthly'].seat_limit if group['monthly'] else group['yearly'].seat_limit"/> Seats Included</li>
-                                                <t t-set="tp" t-value="group['monthly'] or group['yearly']"/>
-                                                <t t-if="tp.description_sale">
-                                                    <t t-foreach="tp.description_sale.split('\n')" t-as="l">
-                                                        <li t-if="l.strip()" class="small text-muted mb-1">✓ <t t-esc="l"/></li>
-                                                    </t>
+                                    <div class="card price-card h-100 p-4 p-lg-5 shadow-lg">
+                                        <h3 class="fw-bold text-primary mb-4 text-uppercase">
+                                            <t
+                                                t-esc="group['monthly'].plan_group_code if group['monthly'] else group['yearly'].plan_group_code" />
+                                        </h3>
+                                        <div class="price-card-wrapper">
+                                            <div class="v2-m-box">
+                                                <t t-if="group['monthly']">
+                                                    <t t-set="prc_m"
+                                                        t-value="current_pricelist._get_product_price(group['monthly'], 1.0)" />
+                                                    <div class="price-val-display">
+                                                        <span t-esc="prc_m"
+                                                            t-options='{"widget": "monetary", "display_currency": current_pricelist.currency_id}' />
+                                                    </div>
+                                                    <p class="text-muted small mt-2">per bulan</p>
+                                                    <button
+                                                        class="btn btn-primary btn-lg w-100 py-3 rounded-pill mt-4 next-slide fw-bold shadow"
+                                                        t-att-data-p-id="group['monthly'].id"
+                                                        t-att-data-p-name="group['monthly'].plan_group_code"
+                                                        t-att-data-p-price="prc_m"
+                                                        t-att-data-p-dur="group['monthly'].sub_duration_days"
+                                                        t-att-data-p-bill="'Monthly'"
+                                                        data-next="v-slide2">Select Package</button>
                                                 </t>
-                                            </ul>
+                                            </div>
+                                            <div class="v2-y-box d-none">
+                                                <t t-if="group['yearly']">
+                                                    <t t-set="prc_y"
+                                                        t-value="current_pricelist._get_product_price(group['yearly'], 1.0)" />
+                                                    <div class="price-val-display text-success">
+                                                        <span t-esc="prc_y"
+                                                            t-options='{"widget": "monetary", "display_currency": current_pricelist.currency_id}' />
+                                                    </div>
+                                                    <p
+                                                        class="text-muted small text-success fw-bold uppercase">Tagihan
+                                                        Tahunan</p>
+                                                    <button
+                                                        class="btn btn-primary btn-lg w-100 py-3 rounded-pill mt-4 next-slide fw-bold shadow"
+                                                        t-att-data-p-id="group['yearly'].id"
+                                                        t-att-data-p-name="group['yearly'].plan_group_code"
+                                                        t-att-data-p-price="prc_y"
+                                                        t-att-data-p-dur="group['yearly'].sub_duration_days"
+                                                        t-att-data-p-bill="'Yearly'"
+                                                        data-next="v-slide2">Select Package</button>
+                                                </t>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -114,18 +139,26 @@
                     <div class="row justify-content-center mt-5">
                         <t t-foreach="plan_groups.values()" t-as="group">
                             <t t-if="group['trial']">
-                                <div class="col-md-10">
-                                    <div class="card rounded-4 p-4 border-primary bg-white shadow-sm">
+                                <div class="col-md-10 text-start">
+                                    <div
+                                        class="card p-4 rounded-4 bg-white shadow-sm border-primary"
+                                        style="border: 2px dashed var(--cp-primary) !important;">
                                         <div class="row align-items-center">
-                                            <div class="col-lg-8">
-                                                <h4 class="fw-bold mb-1 text-dark"><i class="fa fa-gift text-primary me-2"/> Start Risk-Free 7-Day Journey</h4>
-                                                <p class="text-muted small mb-0">No billing required. Experience full premium features for up to <t t-esc="group['trial'].seat_limit"/> seats.</p>
+                                            <div class="col-lg-8 px-lg-4">
+                                                <h4 class="fw-bold mb-1 text-dark"><i
+                                                        class="fa fa-rocket text-primary me-2" />
+                                                    Gratis Coba 7-Hari</h4>
+                                                <p class="text-muted small mb-0">Nikmati akses
+                                                    premium lengkap tanpa komitmen kartu kredit.</p>
                                             </div>
-                                            <div class="col-lg-4 text-end mt-3 mt-lg-0">
-                                                <button class="btn btn-primary px-5 py-3 fw-bold rounded-pill shadow next-slide" 
-                                                        t-att-data-plan-id="group['trial'].id" t-att-data-plan-name="'Free Trial'"
-                                                        t-att-data-plan-price="0" t-att-data-inc-seats="group['trial'].seat_limit"
-                                                        t-att-data-duration="7" t-att-data-billing="'Trial'" data-next="v-slide2">Start My Trial</button>
+                                            <div class="col-lg-4 text-center mt-3 mt-lg-0">
+                                                <button
+                                                    class="btn btn-primary px-5 py-3 fw-bold rounded-pill next-slide shadow"
+                                                    t-att-data-p-id="group['trial'].id"
+                                                    t-att-data-p-name="'Free Trial'"
+                                                    t-att-data-p-price="0" t-att-data-p-dur="7"
+                                                    t-att-data-p-bill="'Trial'" data-next="v-slide2">Coba
+                                                    Gratis</button>
                                             </div>
                                         </div>
                                     </div>
@@ -135,64 +168,83 @@
                     </div>
                 </div>
 
-                <!-- SLIDE 2: CONFIG -->
+                <!-- SLIDE 2: REVIEW -->
                 <div id="v-slide2" class="wizard-slide d-none text-start">
                     <div class="row g-4">
-                        <div class="col-md-7">
-                            <div id="seat-config-area" class="card p-5 border-0 shadow rounded-4 bg-white mb-4">
-                                <h3 class="fw-bold mb-4">Capacity Selection</h3>
-                                <div class="p-4 rounded-4 border d-flex justify-content-between align-items-center bg-light">
+                        <div class="col-lg-7">
+                            <div class="card p-5 border-0 shadow rounded-4 bg-white h-100">
+                                <h3 class="fw-bold text-dark">Rangkuman Pesanan</h3>
+                                <div
+                                    class="p-4 rounded-4 border bg-light mt-4 shadow-sm d-flex justify-content-between align-items-center">
                                     <div>
-                                        <label class="text-muted small uppercase fw-bold d-block mb-1">Additional User Access</label>
-                                        <h5 class="mb-0 fw-bold text-dark"><span id="lbl-unit-price">0</span> / user</h5>
+                                        <h4 class="fw-bold text-primary mb-1" id="rev-disp-name">Plan
+                                            Name</h4>
+                                        <p class="text-muted small mb-0">Status: Konfigurasi
+                                            berhasil.</p>
                                     </div>
-                                    <div class="d-flex align-items-center bg-white border rounded-pill p-1 shadow-sm">
-                                        <button class="btn btn-seat-circle" id="seat-minus"><i class="fa fa-minus"/></button>
-                                        <input type="number" id="extra-seat-in" class="seat-num-input" value="0"/>
-                                        <button class="btn btn-seat-circle" id="seat-plus"><i class="fa fa-plus"/></button>
+                                    <div class="h3 fw-bold text-dark" id="rev-disp-price">0.00</div>
+                                </div>
+                                <div class="mt-4 pt-3">
+                                    <h5 class="fw-bold small uppercase mb-3">MASA LAYANAN:</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div
+                                                class="p-3 border rounded-3 text-center bg-white shadow-sm small">
+                                                Mulai: <strong>Hari Ini</strong></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div
+                                                class="p-3 border rounded-3 text-center bg-white shadow-sm small text-primary">
+                                                Akhir: <strong id="rev-disp-date">---</strong></div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="mt-3 small text-muted"><i class="fa fa-info-circle me-1"/> Basis included: <span id="lbl-inc-s" class="fw-bold text-dark">0</span> seats.</div>
-                            </div>
-                            
-                            <div id="trial-notice" class="alert alert-info border-0 rounded-4 p-4 d-none">
-                                <h5 class="fw-bold mb-1 text-dark">Standard Trial Mode</h5>
-                                <p class="mb-0">Extra capacity is not available during the 7-day test period.</p>
-                            </div>
-
-                            <h5 class="fw-bold mt-5 mb-3 ms-2">Optional Service Modules</h5>
-                            <div id="v2-addon-area" class="row g-3"></div>
-
-                            <div class="mt-5 border-top pt-5">
-                                <button class="btn btn-primary btn-lg rounded-pill w-100 py-3 fw-bold shadow next-slide" data-next="v-slide3">CONTINUE AND DEPLOY</button>
-                                <button class="btn btn-link d-block w-100 mt-2 text-muted prev-slide small shadow-none">Go back and change plan</button>
+                                <div class="mt-auto pt-5 border-top text-center">
+                                    <button
+                                        class="btn btn-primary btn-lg rounded-pill w-100 py-3 fw-bold shadow next-slide"
+                                        data-next="v-slide3">KONFIRMASI DETAIL &amp; REGISTER</button>
+                                    <button class="btn btn-link mt-2 text-muted prev-slide small"
+                                        style="text-decoration:none" data-prev="v-slide1">
+                                        <u>Ubah Paket Sebelumnya</u>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-md-5">
-                            <div class="card p-4 summary-card border-0 shadow h-100">
-                                <h5 class="fw-bold border-bottom pb-3 mb-4"><i class="fa fa-shopping-basket text-primary me-2"/> Selection Review</h5>
-                                <div class="mb-4 small border-bottom pb-3 text-dark">
-                                    <div class="d-flex justify-content-between mb-2"><span>Selection:</span> <span class="fw-bold text-uppercase" id="sum-plan-n">---</span></div>
-                                    <div class="d-flex justify-content-between mb-2"><span>Billing Type:</span> <span class="text-primary fw-bold text-uppercase" id="sum-billing">---</span></div>
-                                    <div class="d-flex justify-content-between text-muted"><span class="small">Access Validity:</span> <span class="fw-bold small" id="sum-date">---</span></div>
+                        <!-- BILLING SIDEBAR -->
+                        <div class="col-lg-5">
+                            <div class="card p-4 summary-card border-0 shadow">
+                                <h5 class="fw-bold border-bottom pb-3 mb-4 text-dark">Rincian
+                                    Billing</h5>
+                                <div class="mb-4 small border-bottom pb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>SaaS Selection:</span>
+                                        <span class="fw-bold text-uppercase" id="sum-name">---</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Billing Cycle:</span>
+                                        <span class="text-primary fw-bold" id="sum-bill">---</span>
+                                    </div>
                                 </div>
-                                <div class="mb-4 bg-white p-3 border rounded shadow-sm text-center">
-                                    <div class="text-muted small fw-bold mb-1 uppercase">TOTAL MANAGED SEATS</div>
-                                    <div class="h3 fw-bold text-primary mb-0"><span id="sum-t-seats">0</span> Members</div>
+                                <div class="py-1 small text-dark mb-4 border-bottom pb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Sewa Paket Inti</span>
+                                        <span class="fw-bold" id="sum-base-p">0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Biaya Provisioning</span>
+                                        <span class="fw-bold" id="sum-setup-p">0.00</span>
+                                    </div>
                                 </div>
-                                <div class="py-1 small border-bottom mb-3 pb-3">
-                                    <div class="d-flex justify-content-between mb-2 text-muted"><span>Plan Base Access</span> <span class="fw-bold text-dark" id="sum-base-p">0</span></div>
-                                    <div id="sum-extra-row" class="d-flex justify-content-between text-primary mb-1 fw-bold"><span>Added Seats x <span id="sum-ext-q">0</span></span> <span id="sum-ext-p">0</span></div>
-                                    <div id="sum-addons" class="mt-2 border-top pt-2"></div>
-                                </div>
-                                <div class="d-flex justify-content-between small text-dark mt-2 fw-bold">
-                                    <span>Workspace Implementation Fee</span> <span id="sum-setup">0</span>
-                                </div>
-                                <div class="border-top pt-4 mt-auto text-end bg-white p-3 rounded border">
-                                    <p class="text-muted small mb-0 fw-bold uppercase">INITIAL PAYMENT DUE:</p>
-                                    <div class="h2 fw-bold text-dark d-flex justify-content-end align-items-baseline">
-                                        <span id="sum-sym" class="me-2 fs-3 text-muted"></span><span id="sum-total-amt">0.00</span>
+                                <div
+                                    class="border-top pt-4 mt-auto text-end bg-white rounded-4 p-3 border">
+                                    <p class="text-muted small mb-0 fw-bold uppercase">GRAND TOTAL
+                                        TAGIHAN:</p>
+                                    <div
+                                        class="h1 fw-bold text-dark d-flex justify-content-end align-items-center mt-1">
+                                        <span id="sum-sym" class="me-2 fs-3 text-muted"></span>
+                                        <!-- ID ini yang digunakan oleh JS -->
+                                        <span id="sum-total-amt">0.00</span>
                                     </div>
                                 </div>
                             </div>
@@ -200,157 +252,104 @@
                     </div>
                 </div>
 
-                <!-- SLIDE 3 -->
+                <!-- SLIDE 3: REGISTER -->
                 <div id="v-slide3" class="wizard-slide d-none p-lg-5">
-                    <div class="card p-5 border-0 shadow rounded-4 mx-auto bg-white text-start shadow-lg" style="max-width: 600px;">
-                        <h2 class="fw-bold text-center mb-5 text-dark text-uppercase">Identification</h2>
-                        <label class="fw-bold small text-muted uppercase mb-1">Choose Subdomain</label>
-                        <div class="input-group input-group-lg border rounded shadow-sm overflow-hidden mb-4 bg-light">
-                            <input type="text" id="final-sub" class="form-control border-0 bg-transparent px-3" placeholder="firm-office"/>
-                            <span class="input-group-text bg-white border-0 fw-bold text-muted px-4">.cleanpresence.com</span>
+                    <div
+                        class="card p-5 border-0 shadow-lg rounded-4 mx-auto bg-white text-start shadow-lg"
+                        style="max-width: 600px;">
+                        <h2 class="fw-bold text-center mb-5 text-dark h3 uppercase">Detail Hub</h2>
+                        <label class="fw-bold small text-muted mb-1">Subdomain</label>
+                        <div class="input-group input-group-lg border rounded-4 shadow-sm mb-4">
+                            <input type="text" id="final_sub_val"
+                                class="form-control border-0 px-3 bg-white" placeholder="lawhub-xyz" />
+                            <span class="input-group-text bg-white border-0 fw-bold px-4 small">
+                                .cleanpresence.com</span>
                         </div>
-                        <label class="fw-bold small text-muted uppercase mb-1 mt-2">Organization Full Name</label>
-                        <input type="text" id="final-company" class="form-control form-control-lg border-0 bg-light shadow-sm mb-5 px-3 py-3" placeholder="Corporate Title Inc."/>
-                        <button id="v2-activate-trigger" class="btn btn-primary btn-lg w-100 py-4 fw-bold shadow shadow-lg rounded-pill uppercase fs-5">CONFIRM AND LAUNCH</button>
-                        <div class="text-center mt-4 text-muted cursor-pointer prev-slide fw-bold" data-prev="v-slide2">Go back and edit</div>
+                        <label class="fw-bold small text-muted mb-1">Legal Company Name</label>
+                        <input type="text" id="final_comp_val"
+                            class="form-control form-control-lg border bg-light shadow-none mb-5 px-3 py-3"
+                            placeholder="Organization Title Ltd." />
+                        <button id="dev_trigger_btn"
+                            class="btn btn-primary btn-lg w-100 py-4 fw-bold shadow shadow-lg rounded-pill uppercase">DAFTAR
+                            DAN BUAT SEKARANG</button>
                     </div>
                 </div>
             </div>
 
-            <!-- JS ENGINE FIXED -->
+            <!-- ENGINE JS -->
             <script type="text/javascript">
             <![CDATA[
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Penangkapan Variable Master
-                    const curS = document.getElementById('js_curr_sym')?.value || '$';
-                    const unitP = parseFloat(document.getElementById('js_seat_price')?.value || 0);
-                    const setuP = parseFloat(document.getElementById('js_setup_fee')?.value || 0);
-                    const matX = JSON.parse(document.getElementById('js_addon_map')?.value || '{}');
+                    const SYM = document.getElementById('js_data_symbol')?.value || 'Rp ';
+                    const FIXED_SETUP = parseFloat(document.getElementById('js_data_setup_fee')?.value || 0);
 
-                    // Object State
-                    let state = { pid:0, name:'', price:0, base:0, add:0, addons:{}, bill:'', dur:30 };
+                    let cart = { pid:0, name:'', price:0, dur:30, bill:'' };
+                    const formatP = (n) => n.toLocaleString('id-ID', { minimumFractionDigits: 2 });
+                    function putVal(id, t) { const el = document.getElementById(id); if(el) el.innerText = t; }
 
-                    const fmtPrice = (num) => num.toLocaleString('id-ID', { minimumFractionDigits: 2 });
-                    
-                    // FUNGSI INI ADALAH FUNGSI YANG ERROR TADI
-                    function updateText(id, t) { 
-                        const e = document.getElementById(id); 
-                        if(e) e.innerText = t; 
+                    function refreshWizardPills(stepNum) {
+                        for(let i=1; i<=3; i++) {
+                            const p = document.getElementById('v2-st-'+i); if(!p) continue;
+                            if(i === stepNum) { p.classList.add('active','fw-bold'); p.classList.remove('disabled','text-muted'); }
+                            else { p.classList.remove('active','fw-bold'); if(i < stepNum) p.classList.remove('disabled'); else p.classList.add('disabled','text-muted'); }
+                        }
+                        window.scrollTo(0,0);
                     }
 
-                    function reCalc() {
-                        let addSum = 0;
-                        const summaryA = document.getElementById('sum-addons');
-                        if(summaryA) summaryA.innerHTML = '';
-                        Object.values(state.addons).forEach(a => {
-                            addSum += a.p;
-                            summaryA.innerHTML += `<div class="d-flex justify-content-between mb-1"><span>${a.n}</span><span class="fw-bold text-primary">${curS} ${fmtPrice(a.p)}</span></div>`;
-                        });
-                        const extraP = state.add * unitP;
-                        const grandT = state.price + extraP + addSum + setuP;
-
-                        updateText('sum-ext-q', state.add);
-                        updateText('sum-ext-p', curS + ' ' + fmtPrice(extraP));
-                        updateText('sum-t-seats', state.base + state.add);
-                        updateText('sum-total-amt', fmtPrice(grandT));
-                    }
-
-                    document.querySelectorAll('.next-slide').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const nxt = this.dataset.next;
-                            if(nxt === 'v-slide2' && this.dataset.planId) {
-                                state = { 
-                                    pid: parseInt(this.dataset.planId), name: this.dataset.planName, 
-                                    price: parseFloat(this.dataset.planPrice || 0),
-                                    base: parseInt(this.dataset.incSeats || 1), add: 0, addons: {}, bill: this.dataset.billing,
-                                    dur: parseInt(this.dataset.duration || 30)
+                    document.querySelectorAll('.next-slide').forEach(b => {
+                        b.addEventListener('click', function() {
+                            const nxtID = this.dataset.next;
+                            if(nxtID === 'v-slide2' && (this.dataset.pId || this.getAttribute('data-p-id'))) {
+                                cart = { 
+                                    pid: parseInt(this.dataset.pId || this.getAttribute('data-p-id')),
+                                    name: this.dataset.pName || this.getAttribute('data-p-name'),
+                                    price: parseFloat(this.dataset.pPrice || this.getAttribute('data-p-price') || 0), 
+                                    dur: parseInt(this.dataset.pDur || this.getAttribute('data-p-dur') || 30), 
+                                    bill: this.dataset.pBill || this.getAttribute('data-p-bill') 
                                 };
 
-                                updateText('sum-plan-n', state.name);
-                                updateText('sum-base-p', curS + ' ' + fmtPrice(state.price));
-                                updateText('lbl-inc-s', state.base);
-                                updateText('lbl-unit-price', curS + ' ' + fmtPrice(unitP));
-                                updateText('sum-sym', curS);
-                                updateText('sum-setup', curS + ' ' + fmtPrice(setuP));
-                                updateText('sum-billing', state.bill + ' Billing');
-                                
-                                const startD = new Date(); const endD = new Date(); 
-                                endD.setDate(startD.getDate() + state.dur);
-                                updateText('sum-date', startD.toLocaleDateString('en-GB') + ' - ' + endD.toLocaleDateString('en-GB'));
+                                // Write to Main Review
+                                putVal('rev-disp-name', cart.name);
+                                putVal('rev-disp-price', SYM + ' ' + formatP(cart.price));
+                                const now = new Date(); const end = new Date(); end.setDate(now.getDate() + cart.dur);
+                                putVal('rev-disp-date', end.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'}));
 
-                                const isTrial = (state.bill === 'Trial');
-                                document.getElementById('seat-config-area')?.classList.toggle('d-none', isTrial);
-                                document.getElementById('trial-notice')?.classList.toggle('d-none', !isTrial);
-                                document.getElementById('sum-extra-row')?.classList.toggle('d-none', isTrial);
+                                // Write to Sidebar Review
+                                putVal('sum-name', cart.name);
+                                putVal('sum-bill', cart.bill);
+                                putVal('sum-base-p', SYM + ' ' + formatP(cart.price));
+                                putVal('sum-sym', SYM);
 
-                                const area = document.getElementById('v2-addon-area');
-                                if(area) {
-                                    area.innerHTML = '';
-                                    const available = matX[state.pid.toString()] || {};
-                                    Object.entries(available).forEach(([aid, d]) => {
-                                        area.innerHTML += `
-                                            <div class="col-md-6 mb-2">
-                                                <div class="card v2-addon-card p-3 shadow-sm border" data-aid="${aid}" data-n="${d.name}" data-p="${d.price}">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <h6 class="fw-bold mb-0" style="font-size:0.85rem">${d.name}</h6>
-                                                        <div class="form-check form-switch"><input class="form-check-input" type="checkbox"/></div>
-                                                    </div>
-                                                    <p class="small text-primary mt-2 fw-bold mb-0">${curS} ${fmtPrice(d.price)}/mo</p>
-                                                </div>
-                                            </div>`;
-                                    });
-                                    document.querySelectorAll('.v2-addon-card').forEach(ac => {
-                                        ac.onclick = function(e) {
-                                            const ck = this.querySelector('input'); if(e.target !== ck) ck.checked = !ck.checked;
-                                            this.classList.toggle('active', ck.checked);
-                                            const id = this.dataset.aid;
-                                            if(ck.checked) state.addons[id] = { n: this.dataset.n, p: parseFloat(this.dataset.p) };
-                                            else delete state.addons[id];
-                                            reCalc();
-                                        };
-                                    });
-                                }
-                                if(document.getElementById('extra-seat-in')) document.getElementById('extra-seat-in').value = 0;
-                                reCalc();
-                                
-                                const stFinal = document.getElementById('v2-activate-trigger');
-                                if(stFinal) stFinal.innerText = (isTrial) ? 'START MY FREE WORKSPACE' : 'ACTIVATE AND PAY';
+                                // CALCULATION LOGIC: Fix for 0 issues
+                                const sFee = (cart.bill === 'Trial') ? 0 : FIXED_SETUP;
+                                const grandT = cart.price + sFee;
+
+                                putVal('sum-setup-p', SYM + ' ' + formatP(sFee));
+                                putVal('sum-total-amt', formatP(grandT));
                             }
                             document.querySelectorAll('.wizard-slide').forEach(s => s.classList.add('d-none'));
-                            document.getElementById(nxt).classList.remove('d-none');
-                            
-                            const sn = parseInt(nxt.slice(-1));
-                            for(let i=1; i<=3; i++) { 
-                                const dIdx = document.getElementById('st-' + i); 
-                                if(dIdx) { dIdx.classList.toggle('active', i === sn); dIdx.classList.toggle('disabled', i > sn); } 
-                            }
-                            window.scrollTo(0,0);
+                            document.getElementById(nxtID)?.classList.remove('d-none');
+                            refreshWizardPills(parseInt(nxtID.slice(-1)));
                         });
                     });
 
                     document.querySelectorAll('.prev-slide').forEach(b => { 
                         b.onclick = () => { 
-                            const prev = b.dataset.prev || 'v-slide1';
-                            document.querySelectorAll('.wizard-slide').forEach(s => s.classList.add('d-none')); 
-                            document.getElementById(prev).classList.remove('d-none');
-                        };
+                            const target = b.dataset.prev || (cart.pid ? 'v-slide2' : 'v-slide1');
+                            document.querySelectorAll('.wizard-slide').forEach(s => s.classList.add('d-none'));
+                            document.getElementById(target).classList.remove('d-none');
+                            refreshWizardPills(parseInt(target.slice(-1)));
+                        }
                     });
 
-                    const inSeats = document.getElementById('extra-seat-in');
-                    if(inSeats) {
-                        document.getElementById('seat-plus').onclick = () => { inSeats.value = parseInt(inSeats.value)+1; inSeats.dispatchEvent(new Event('change')); };
-                        document.getElementById('seat-minus').onclick = () => { if(inSeats.value > 0) inSeats.value = parseInt(inSeats.value)-1; inSeats.dispatchEvent(new Event('change')); };
-                        inSeats.onchange = function() { state.add = parseInt(this.value) || 0; reCalc(); };
+                    document.getElementById('v2CycleToggle').onchange = function() {
+                        const check = this.checked;
+                        document.querySelectorAll('.v2-m-box').forEach(v => v.classList.toggle('d-none', check));
+                        document.querySelectorAll('.v2-y-box').forEach(v => v.classList.toggle('d-none', !check));
                     }
                     
-                    document.getElementById('cycleToggle').onchange = function() {
-                        const showY = this.checked;
-                        document.querySelectorAll('.v2-m-view').forEach(v => v.classList.toggle('d-none', showY));
-                        document.querySelectorAll('.v2-y-view').forEach(v => v.classList.toggle('d-none', !showY));
-                    }
-
-                    document.getElementById('v2-activate-trigger').onclick = function() {
-                        alert("OK, Prepare paddle.js for Workspace Address: " + document.getElementById('final-sub').value);
+                    document.getElementById('dev_trigger_btn').onclick = () => {
+                        alert("Provisioning Engine: Success data pickup for " + document.getElementById('final_sub_val').value);
                     }
                 });
             ]]>
