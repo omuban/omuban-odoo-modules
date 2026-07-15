@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="saas_price_display">
+        <div class="text-center mb-4">
+            <t t-set="is_yearly" t-value="'Tahunan' in categ.name" />
+            <t t-set="raw_price"
+                t-value="product.list_price / 12 if is_yearly else product.list_price" />
+
+            <h2 class="pricing-card-title mb-0">
+                <!-- round() membuang koma, precision: 0 membuang tampilan .00 -->
+                <span t-esc="round(raw_price)"
+                    t-options="{'widget': 'monetary', 'display_currency': product.currency_id, 'precision': 0}" />
+            </h2>
+
+            <div class="text-muted fw-bold mt-1">
+                <t t-if="is_yearly"> Per Bulan <br />
+                    <small class="fw-normal"
+                        style="font-size: 0.8rem; opacity: 0.8;"> (Ditagih <span
+                            t-field="product.list_price"
+                            t-options="{'widget': 'monetary', 'display_currency': product.currency_id, 'precision': 0}" />
+                    / Tahun) </small>
+                </t>
+                <t t-else=""> Per <t t-esc="product.saas_duration" /> Hari </t>
+            </div>
+        </div>
+    </template>
+</odoo>

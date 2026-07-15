@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="saas_feature_list">
+        <ul class="list-unstyled mt-2 mb-4 flex-grow-1">
+            <li class="mb-3 d-flex align-items-center">
+                <div class="rounded-circle bg-primary-light p-2 me-2">
+                    <i class="fa fa-users text-primary" />
+                </div>
+                <strong>Kapasitas: <t t-esc="product.saas_max_users" /> Users</strong>
+            </li>
+
+            <!-- <li class="text-muted small mb-2 mt-4 fw-bold">🚀 BISNIS</li> -->
+            <!-- Karakter & diubah menjadi &amp; -->
+            <!-- <li class="small mb-2"><i class="fa fa-check-circle text-success me-2"/> Presensi
+            HP, GPS &amp; Foto</li>
+            <li class="small mb-2"><i class="fa fa-check-circle text-success me-2"/> Rekap Otomatis
+            Payroll</li>
+            <li class="small mb-2"><i class="fa fa-check-circle text-success me-2"/> Laporan
+            Harian/Mingguan</li>
+            
+            <li class="text-muted small mb-2 mt-4 fw-bold">⚙️ TEKNIS</li>
+            <li class="small mb-2"><i class="fa fa-check-circle text-success me-2"/> PWA (Tanpa Instal
+            Aplikasi)</li>
+            <li class="small mb-2"><i class="fa fa-check-circle text-success me-2"/> Multi Cabang &amp;
+            Cloud</li>
+            <li class="small mb-2"><i class="fa fa-check-circle text-success me-2"/> HTTPS Secure &amp;
+            Backup</li> -->
+        </ul>
+    </template>
+</odoo>

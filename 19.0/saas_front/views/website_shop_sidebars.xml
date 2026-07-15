@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Cara "SaaS": Menonaktifkan View secara permanen.
+        Kita mengubah field 'active' menjadi False pada record view bawaan Odoo.
+    -->
+
+    <!-- Matikan Filter Harga -->
+    <record id="website_sale.filter_products_price" model="ir.ui.view">
+        <field name="active" eval="False" />
+    </record>
+
+    <!-- Matikan Filter Tags -->
+    <record id="website_sale.filter_products_tags" model="ir.ui.view">
+        <field name="active" eval="False" />
+    </record>
+
+    <!-- Matikan Filter Attributes (Varian Produk) -->
+    <record id="website_sale.filter_products_attributes" model="ir.ui.view">
+        <field name="active" eval="False" />
+    </record>
+
+    <!-- 
+        CSS Tweak: Menghilangkan sisa-sisa garis atau padding 
+        agar sidebar benar-benar bersih.
+    -->
+    <template id="saas_sidebar_clean_css" inherit_id="website.layout">
+        <xpath expr="//head" position="inside">
+            <style>
+                /* Sembunyikan container sidebar jika kosong */
+                #wsale_products_attributes_collapse {
+                    display: none !important;
+                }
+                /* Jika Anda ingin menyembunyikan seluruh kolom kiri (sidebar) */
+                #products_grid_before {
+                    display: none !important;
+                }
+            </style>
+        </xpath>
+    </template>
+</odoo>

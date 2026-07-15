@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="saas_product_page_inherit" inherit_id="website_sale.product">
+        <xpath expr="//div[@id='product_details']" position="inside">
+            <style type="text/css">
+                #product_details {
+                    flex: 0 0 100% !important;
+                    max-width: 100% !important;
+                    text-align: left !important;
+                }
+                .o_wsale_product_images,
+                .o_product_image,
+                .oe_product_image,
+                .o_wsale_product_images_wrapper,
+                .o_wsale_product_information,
+                .o_wsale_product_intro,
+                .o_wsale_product_name,
+                .o_wsale_product_price,
+                .o_wsale_product_summary,
+                .o_wsale_product_details_content_section_title,
+                .o_wsale_product_details_content_section_price,
+                .o_wsale_product_details_content_section_attributes,
+                .o_wsale_product_details_content_section_accordion,
+                #product_full_description,
+                #product_attributes_simple,
+                #product_documents,
+                .product_social,
+                .o_wsale_breadcrumb,
+                .o_wsale_product_cart,
+                .o_wsale_product_btn,
+                .o_wsale_product_options,
+                .o_wsale_product_details,
+                .o_wsale_product_details_content,
+                .o_wsale_product_details_content_section,
+                .o_wsale_product_main {
+                    display: none !important;
+                }
+                .saas_product_container {
+                    max-width: 940px;
+                    margin: 0 auto;
+                    padding: 1rem 0 2rem;
+                }
+                .saas_product_card {
+                    background: #ffffff;
+                    border: 1px solid rgba(228, 231, 235, 0.9);
+                    border-radius: 1.25rem;
+                    padding: 2rem;
+                    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+                }
+                .saas_product_section {
+                    border-top: 1px solid #eef2f6;
+                    padding-top: 1.25rem;
+                    margin-top: 1.5rem;
+                }
+                .saas_product_section:first-of-type {
+                    border-top: 0;
+                    padding-top: 0;
+                    margin-top: 0;
+                }
+                .saas_product_section h4,
+                .saas_product_section h5 {
+                    font-weight: 700;
+                }
+                .saas_product_meta {
+                    display: grid;
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                    gap: 0.85rem;
+                    margin-top: 1rem;
+                }
+                .saas_product_meta .card {
+                    border: 1px solid #eef2f6;
+                    border-radius: 0.95rem;
+                    padding: 1rem 1.1rem;
+                    background: #f8fafc;
+                }
+                .saas_product_meta .card .small {
+                    color: #6b7280;
+                }
+                .saas_product_meta .card .fw-bold {
+                    font-size: 1.05rem;
+                }
+                .saas_product_price_box {
+                    margin-top: 1rem;
+                    border-radius: 1rem;
+                    padding: 1.25rem 1.35rem;
+                    background: #f5f8fb;
+                    border: 1px solid #e7edf5;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .saas_product_price_box .small {
+                    color: #6b7280;
+                }
+                /* Keep the standard product page structure while giving it a cleaner card feel */
+                .saas_back_bar {
+                    background: #f6f7f9;
+                    border: 1px solid #eef2f6;
+                    padding: 0.5rem 0.9rem;
+                    border-radius: 0.6rem;
+                    margin-bottom: 1rem;
+                }
+                .saas_back_bar a { color: #374151; text-decoration: none; }
+                .saas_product_cta_wrapper {
+                    width: 100%;
+                    max-width: 100%;
+                }
+                .saas_product_cta_wrapper .btn {
+                    width: 100%;
+                    padding: 1rem 1rem;
+                    font-size: 1rem;
+                    border-radius: 0.85rem;
+                }
+                .saas_product_cta_wrapper .btn-secondary {
+                    border-radius: 0.85rem;
+                }
+                @media (max-width: 767px) {
+                    .saas_product_card {
+                        padding: 1.25rem;
+                    }
+                    .saas_product_meta {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                @media (max-width: 575px) {
+                    .saas_product_cta_wrapper {
+                        padding: 0 0.25rem;
+                    }
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//div[@id='o_wsale_product_details_content']" position="inside">
+            <div class="saas_product_container">
+                <div class="saas_back_bar">
+                    <a href="/shop">&#8592; Kembali</a>
+                </div>
+                <div class="saas_product_card">
+                    <div class="saas_product_section">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0">Informasi Paket</h4>
+                            <span class="badge bg-primary-subtle text-primary">Ready to Order</span>
+                        </div>
+                        <div class="saas_product_meta">
+                            <div class="card">
+                                <div class="small text-muted">Nama Paket</div>
+                                <div class="fw-bold">
+                                    <t t-esc="product.name" />
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="small text-muted">Durasi</div>
+                                <div class="fw-bold">
+                                    <t t-esc="product.saas_duration or '-'" />
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="small text-muted">Kuota Pengguna</div>
+                                <div class="fw-bold">
+                                    <t t-esc="product.saas_max_users or '-'" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="saas_product_price_box">
+                            <div>
+                                <div class="small text-muted">Harga</div>
+                                <div class="h5 mb-0 fw-bold">Rp <t
+                                        t-esc="('{:,}'.format(int(product.list_price)).replace(',','.') )" />
+                                    ,-</div>
+                            </div>
+                            <div class="small text-muted">Satu item • Qty 1</div>
+                        </div>
+                    </div>
+
+                    <div class="saas_product_section">
+                        <h5 class="mb-3">Fitur</h5>
+                        <div class="text-muted">
+                            <t t-if="product.description_sale">
+                                <div t-field="product.description_sale"
+                                    class="lead fw-normal text-dark" />
+                            </t>
+                            <t t-else="">
+                                <p class="mb-0">Informasi fitur akan muncul di sini.</p>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="saas_product_section">
+                        <div class="small text-muted mb-2">
+                            <i class="fa fa-shield me-2" /> Siap digunakan dalam hitungan menit </div>
+                        <div class="small text-muted">
+                            <i class="fa fa-truck me-2" /> Aktivasi akan dikirim via email. Pastikan
+                            alamat email anda valid </div>
+                    </div>
+
+                    <div class="saas_product_section">
+                        <div class="saas_product_cta_wrapper">
+                            <a id="add_to_cart"
+                                role="button"
+                                href="#"
+                                class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm js_check_product a-submit"
+                                t-att-data-show-quantity="is_view_active('website_sale.product_quantity')"
+                                data-animation-selector=".o_wsale_product_images">
+                                <i class="fa fa-check-circle me-2" /> Konfirmasi </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="saas_product_cta_label_inherit" inherit_id="website_sale.cta_wrapper">
+        <xpath expr="//a[@id='add_to_cart']" position="replace">
+            <a
+                id="add_to_cart"
+                role="button"
+                href="#"
+                t-attf-class="btn btn-primary js_check_product a-submit flex-grow-1"
+                t-att-data-show-quantity="is_view_active('website_sale.product_quantity')"
+                data-animation-selector=".o_wsale_product_images"
+            >
+                <i class="fa fa-shopping-cart me-2" /> Konfirmasi </a>
+        </xpath>
+    </template>
+
+</odoo>

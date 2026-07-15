@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="saas_shop_assets_v2" inherit_id="website.layout">
+        <xpath expr="//head" position="inside">
+            <style type="text/css">
+                <![CDATA[
+                .saas-pricing-card { transition: all 0.3s ease; border: none !important; border-radius: 20px !important; overflow: hidden; }
+                .saas-pricing-card:hover { transform: translateY(-10px); box-shadow: 0 1.5rem 4rem rgba(0,0,0,.15) !important; }
+                .saas-category-title { font-weight: 800; color: #1a2a3a; text-transform: uppercase; margin-top: 4rem; text-align: center; }
+                .saas-hr { border-top: 3px solid #0d6efd; width: 50px; margin: 1rem auto 3rem auto; }
+                .pricing-card-title { font-weight: 800; color: #0d6efd; font-size: 2.2rem; white-space: nowrap; }
+                
+                /* Sembunyikan elemen gambar dan sidebar */
+                .oe_product_image, .o_wsale_products_grid_table_wrapper, #products_grid_before, .products_pager { 
+                    display: none !important; 
+                }
+                #products_grid { flex: 0 0 100%; max-width: 100%; }
+                ]]>
+            </style>
+        </xpath>
+    </template>
+
+    <template id="products_saas_modular" inherit_id="website_sale.products">
+        <xpath expr="//div[@id='products_grid']" position="replace">
+            <div id="products_grid" class="col-12">
+                <t t-if="products">
+                    <div class="container pb-5">
+                        <t t-set="saas_products"
+                            t-value="products.filtered(lambda p: p.is_saas_pkg and p.is_published)" />
+                        <t t-set="all_categories"
+                            t-value="saas_products.mapped('public_categ_ids').sorted('sequence')" />
+
+                        <t t-foreach="all_categories" t-as="categ">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2 class="saas-category-title" t-esc="categ.name" />
+                                    <div class="saas-hr" />
+                                </div>
+                            </div>
+                            <div class="row justify-content-center g-4">
+                                <t
+                                    t-foreach="saas_products.filtered(lambda p: categ in p.public_categ_ids).sorted('website_sequence')"
+                                    t-as="product">
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="card h-100 saas-pricing-card shadow-sm border-0">
+                                            <div
+                                                t-attf-class="card-header py-4 text-center #{'bg-primary text-white' if product.website_sequence &lt; 10 else 'bg-light text-dark'}"
+                                                style="border-radius: 20px 20px 0 0; border:none;">
+                                                <h4 class="my-0 fw-bold" t-field="product.name" />
+                                            </div>
+                                            <div class="card-body d-flex flex-column p-4">
+                                                <t t-call="saas_front.saas_price_display" />
+                                                <div class="mt-auto pt-3">
+                                                    <a t-att-href="product.website_url"
+                                                        class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm">
+                                                        Pilih Paket
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="signup_fields_saas_inherit" inherit_id="auth_signup.fields">
+        <xpath expr="//div[last()]" position="after">
+            <div class="mb-3 field-company_name">
+                <label for="company_name" class="form-label">Nama Perusahaan</label>
+                <input type="text" name="company_name" id="company_name" class="form-control" required="required" placeholder="Contoh: PT Maju Jaya"/>
+            </div>
+            <div class="mb-3 field-company_address">
+                <label for="company_address" class="form-label">Alamat Perusahaan</label>
+                <textarea name="company_address" id="company_address" class="form-control" required="required" placeholder="Alamat lengkap untuk Geofencing awal"></textarea>
+            </div>
+        </xpath>
+    </template>
+</odoo>

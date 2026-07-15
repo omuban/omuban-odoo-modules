@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_saas_inherit" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card border-info mb-3 shadow-sm">
+                        <div class="card-header bg-info text-white">Informasi Layanan SmartAtt</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 border-end">
+                                    <p class="mb-0 text-muted small">Status Paket</p>
+                                    <h4 class="text-primary">
+                                        <t
+                                            t-esc="(request.env.company.saas_status or 'N/A').upper()" />
+                                    </h4>
+                                </div>
+                                <div class="col-md-4 border-end text-center">
+                                    <p class="mb-0 text-muted small">Masa Berlaku</p>
+                                    <h4>
+                                        <t t-esc="request.env.company.expiry_date or 'N/A'" />
+                                    </h4>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <p class="mb-0 text-muted small">Saldo Wallet</p>
+                                    <h4 class="text-success">
+                                        <span t-field="request.env.user.partner_id.wallet_balance"
+                                            t-options="{'widget': 'monetary', 'display_currency': request.env.company.currency_id}" />
+                                    </h4>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="d-grid">
+                                <a href="/smartatt" class="btn btn-primary btn-lg">Buka Aplikasi
+                                    Kehadiran</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
