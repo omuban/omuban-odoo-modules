@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_saas_wallet_transaction" model="ir.sequence">
+        <field name="name">SaaS Wallet Transaction</field>
+        <field name="code">saas.wallet.transaction</field>
+        <field name="prefix">WAL/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False" />
+    </record>
+</odoo>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_saas" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.saas.inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="SmartAtt SaaS" string="SmartAtt SaaS" name="saas_base">
+                    <block title="SaaS Configuration" name="saas_config">
+                        <setting help="Pilih produk referensi untuk durasi Trial.">
+                            <field name="saas_trial_product_id" />
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

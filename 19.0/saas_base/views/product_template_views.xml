@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_view_saas_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.saas.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='sales']" position="inside">
+                <group string="SaaS Configuration" name="saas_config">
+                    <field name="is_saas_pkg" />
+                    <group invisible="not is_saas_pkg">
+                        <field name="saas_app_code" />
+                        <field name="saas_duration" />
+                        <field name="saas_max_users" />
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,21 @@
+{
+    'name': 'SaaS Base Core',
+    'version': '19.0.1.0.0',
+    'category': 'SaaS',
+    'summary': 'Core Engine for Multi-App SaaS, Wallet, and Accumulative Subscription',
+    'author': 'SmartAtt Team',
+    'depends': ['base', 'product', 'sale_management', 'account', 'website_sale'],
+    'data': [
+        'data/ir_sequence_data.xml',
+        'security/saas_base_security.xml',
+        'security/ir.model.access.csv',
+        'views/res_company_views.xml',
+        'views/product_template_views.xml',
+        'views/res_config_settings_views.xml',
+        'views/res_partner_views.xml',
+        'views/saas_wallet_transaction_views.xml',
+    ],
+    'installable': True,
+    'application': True,
+    'license': 'LGPL-3',
+}

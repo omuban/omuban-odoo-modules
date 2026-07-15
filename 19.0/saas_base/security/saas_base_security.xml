@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Rule: Isolasi Company (User hanya bisa melihat data perusahaannya sendiri) -->
+    <record id="saas_res_company_rule" model="ir.rule">
+        <field name="name">SaaS: Company Isolation</field>
+        <field name="model_id" ref="base.model_res_company" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- Rule: Isolasi Partner (Hanya bisa lihat partner di company yang sama) -->
+    <record id="saas_partner_multi_company_rule" model="ir.rule">
+        <field name="name">SaaS: Partner Multi-Company Isolation</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="global" eval="True" />
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in',
+            company_ids)]</field>
+    </record>
+</odoo>
